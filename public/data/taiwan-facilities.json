@@ -1,0 +1,66 @@
+{
+  "facilities": [
+    {
+      "id": "tsmc-hsinchu",
+      "name": "TSMC Hsinchu (HQ + Advanced Fabs)",
+      "position": [120.99, 24.80],
+      "radiusKm": 2.5,
+      "value": 100,
+      "hitPoints": 5,
+      "description": "TSMC headquarters and advanced 2nm fabrication"
+    },
+    {
+      "id": "tsmc-taichung",
+      "name": "TSMC Taichung (Fab 15)",
+      "position": [120.68, 24.14],
+      "radiusKm": 1.5,
+      "value": 60,
+      "hitPoints": 4,
+      "description": "Multiple supporting fabrication facilities"
+    },
+    {
+      "id": "tsmc-tainan",
+      "name": "TSMC Tainan (Fab 18 - STSP)",
+      "position": [120.27, 23.08],
+      "radiusKm": 2.0,
+      "value": 90,
+      "hitPoints": 5,
+      "description": "Southern Taiwan Science Park, 2nm fab"
+    },
+    {
+      "id": "tsmc-kaohsiung",
+      "name": "TSMC Kaohsiung (Advanced Fab)",
+      "position": [120.30, 22.63],
+      "radiusKm": 1.5,
+      "value": 80,
+      "hitPoints": 4,
+      "description": "2nm advanced fabrication facility"
+    }
+  ],
+  "ports": [
+    {
+      "id": "port-keelung",
+      "name": "Port of Keelung",
+      "position": [121.74, 25.13],
+      "type": "major_port"
+    },
+    {
+      "id": "port-kaohsiung",
+      "name": "Port of Kaohsiung",
+      "position": [120.27, 22.62],
+      "type": "major_port"
+    },
+    {
+      "id": "port-taichung",
+      "name": "Port of Taichung",
+      "position": [120.53, 24.28],
+      "type": "major_port"
+    }
+  ],
+  "geography": {
+    "straitWidth": { "min": 126, "max": 180, "unit": "km" },
+    "mapCenter": [120.5, 24.0],
+    "defaultZoom": 7,
+    "bounds": [[118.0, 21.5], [123.0, 26.0]]
+  }
+}

@@ -1,0 +1,268 @@
+{
+  "attackDrones": [
+    {
+      "id": "shahed-136",
+      "name": "Shahed-136",
+      "side": "red",
+      "domain": "air",
+      "speedKmh": 185,
+      "cruiseSpeedKmh": 150,
+      "maxRangeKm": 2500,
+      "enduranceMinutes": 360,
+      "costUSD": 30000,
+      "payloadKg": 40,
+      "guidance": "gps",
+      "vulnerabilities": {
+        "ewJammable": true,
+        "radarCrossSection": "low",
+        "irSignature": "low"
+      }
+    },
+    {
+      "id": "fpv-kamikaze",
+      "name": "FPV Kamikaze Drone",
+      "side": "red",
+      "domain": "air",
+      "speedKmh": 150,
+      "cruiseSpeedKmh": 120,
+      "maxRangeKm": 15,
+      "enduranceMinutes": 25,
+      "costUSD": 1500,
+      "payloadKg": 2,
+      "guidance": "rf_command",
+      "vulnerabilities": {
+        "ewJammable": true,
+        "radarCrossSection": "low",
+        "irSignature": "low"
+      }
+    },
+    {
+      "id": "autonomous-strike",
+      "name": "Autonomous Navigation Strike Drone",
+      "side": "red",
+      "domain": "air",
+      "speedKmh": 150,
+      "cruiseSpeedKmh": 130,
+      "maxRangeKm": 500,
+      "enduranceMinutes": 240,
+      "costUSD": 75000,
+      "payloadKg": 30,
+      "guidance": "autonomous_vision",
+      "vulnerabilities": {
+        "ewJammable": false,
+        "radarCrossSection": "low",
+        "irSignature": "low"
+      }
+    },
+    {
+      "id": "maritime-uuv",
+      "name": "Maritime UUV",
+      "side": "red",
+      "domain": "subsurface",
+      "speedKmh": 37,
+      "cruiseSpeedKmh": 18,
+      "maxRangeKm": 200,
+      "enduranceMinutes": 4320,
+      "costUSD": 250000,
+      "payloadKg": 100,
+      "guidance": "autonomous_vision",
+      "vulnerabilities": {
+        "ewJammable": false,
+        "radarCrossSection": "low",
+        "irSignature": "low"
+      }
+    },
+    {
+      "id": "cruise-missile-yj62",
+      "name": "YJ-62 Cruise Missile",
+      "side": "red",
+      "domain": "air",
+      "speedKmh": 900,
+      "cruiseSpeedKmh": 800,
+      "maxRangeKm": 400,
+      "enduranceMinutes": 30,
+      "costUSD": 1500000,
+      "payloadKg": 300,
+      "guidance": "gps_inertial",
+      "vulnerabilities": {
+        "ewJammable": false,
+        "radarCrossSection": "medium",
+        "irSignature": "medium"
+      }
+    }
+  ],
+  "defenseDrones": [
+    {
+      "id": "interceptor-cheap",
+      "name": "GPS Interceptor Drone",
+      "side": "blue",
+      "domain": "air",
+      "speedKmh": 200,
+      "cruiseSpeedKmh": 160,
+      "maxRangeKm": 20,
+      "enduranceMinutes": 30,
+      "costUSD": 2000,
+      "payloadKg": 1,
+      "guidance": "gps",
+      "vulnerabilities": {
+        "ewJammable": true,
+        "radarCrossSection": "low",
+        "irSignature": "low"
+      }
+    },
+    {
+      "id": "interceptor-autonav",
+      "name": "Auto-Nav Interceptor Drone",
+      "side": "blue",
+      "domain": "air",
+      "speedKmh": 200,
+      "cruiseSpeedKmh": 160,
+      "maxRangeKm": 20,
+      "enduranceMinutes": 40,
+      "costUSD": 15000,
+      "payloadKg": 1,
+      "guidance": "autonomous_vision",
+      "vulnerabilities": {
+        "ewJammable": false,
+        "radarCrossSection": "low",
+        "irSignature": "low"
+      }
+    }
+  ],
+  "defenseAssets": [
+    {
+      "id": "coyote-block3",
+      "name": "Coyote Block 3",
+      "type": "interceptor_squad",
+      "rangeKm": 10,
+      "costPerUseUSD": 100000,
+      "fixedCostUSD": 500000,
+      "capacity": 12,
+      "reloadTimeMinutes": 10,
+      "pkill": 0.85
+    },
+    {
+      "id": "directed-energy-50kw",
+      "name": "50kW Directed Energy",
+      "type": "directed_energy",
+      "rangeKm": 2,
+      "costPerUseUSD": 10,
+      "fixedCostUSD": 10000000,
+      "capacity": 9999,
+      "reloadTimeMinutes": 0.08,
+      "pkill": 0.8
+    },
+    {
+      "id": "ew-jammer",
+      "name": "EW Jammer Station",
+      "type": "ew_jammer",
+      "rangeKm": 15,
+      "costPerUseUSD": 0,
+      "fixedCostUSD": 3000000,
+      "capacity": 9999,
+      "reloadTimeMinutes": 0,
+      "pkill": 0.5
+    },
+    {
+      "id": "net-launcher",
+      "name": "Net Launcher Drone",
+      "type": "net_launcher",
+      "rangeKm": 2,
+      "costPerUseUSD": 500,
+      "fixedCostUSD": 5000,
+      "capacity": 3,
+      "reloadTimeMinutes": 15,
+      "pkill": 0.7
+    },
+    {
+      "id": "decoy-emitter",
+      "name": "Decoy Emitter",
+      "type": "decoy_emitter",
+      "rangeKm": 5,
+      "costPerUseUSD": 0,
+      "fixedCostUSD": 3000,
+      "capacity": 9999,
+      "reloadTimeMinutes": 0,
+      "pkill": 0
+    },
+    {
+      "id": "patriot-pac3",
+      "name": "Patriot PAC-3",
+      "type": "patriot_battery",
+      "rangeKm": 60,
+      "costPerUseUSD": 4000000,
+      "fixedCostUSD": 1000000000,
+      "capacity": 16,
+      "reloadTimeMinutes": 30,
+      "pkill": 0.92
+    },
+    {
+      "id": "hsiung-feng-3",
+      "name": "Hsiung Feng III (Anti-Ship)",
+      "type": "anti_ship_battery",
+      "rangeKm": 250,
+      "costPerUseUSD": 2500000,
+      "fixedCostUSD": 50000000,
+      "capacity": 8,
+      "reloadTimeMinutes": 15,
+      "pkill": 0.8
+    },
+    {
+      "id": "harpoon-block2",
+      "name": "Harpoon Block II (Anti-Ship)",
+      "type": "anti_ship_battery",
+      "rangeKm": 130,
+      "costPerUseUSD": 1500000,
+      "fixedCostUSD": 30000000,
+      "capacity": 4,
+      "reloadTimeMinutes": 10,
+      "pkill": 0.75
+    }
+  ],
+  "vessels": [
+    {
+      "id": "fishing-militia",
+      "name": "Fishing Militia Vessel",
+      "side": "red",
+      "type": "fishing_militia",
+      "speedKnots": 12,
+      "droneCapacity": 3,
+      "droneSpecCarried": "fpv-kamikaze",
+      "armorClass": "none",
+      "costUSD": 100000
+    },
+    {
+      "id": "coast-guard-cutter",
+      "name": "Coast Guard Cutter",
+      "side": "red",
+      "type": "coast_guard",
+      "speedKnots": 25,
+      "droneCapacity": 8,
+      "droneSpecCarried": "fpv-kamikaze",
+      "armorClass": "light",
+      "costUSD": 30000000
+    },
+    {
+      "id": "plan-frigate",
+      "name": "PLAN Frigate",
+      "side": "red",
+      "type": "naval",
+      "speedKnots": 30,
+      "droneCapacity": 25,
+      "droneSpecCarried": "fpv-kamikaze",
+      "armorClass": "medium",
+      "costUSD": 500000000
+    },
+    {
+      "id": "zhu-hai-yun",
+      "name": "Zhu Hai Yun Drone Carrier",
+      "side": "red",
+      "type": "drone_carrier",
+      "speedKnots": 18,
+      "droneCapacity": 50,
+      "droneSpecCarried": "shahed-136",
+      "armorClass": "light",
+      "costUSD": 100000000
+    }
+  ]
+}
