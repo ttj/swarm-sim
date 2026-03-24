@@ -24,6 +24,7 @@ function App() {
             value: number;
             hitPoints: number;
             description?: string;
+            boundary?: [number, number][];
           }) => ({
             ...f,
             currentHitPoints: f.hitPoints,
