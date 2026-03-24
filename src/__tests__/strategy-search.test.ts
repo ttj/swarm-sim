@@ -3,9 +3,9 @@ import { runStrategySearch, generateStrategies, buildAttackTemplates } from '../
 import type { Facility, DroneSpec, DefenseAssetSpec } from '../types';
 
 const facilities: Facility[] = [
-  { id: 'tsmc-hsinchu', name: 'TSMC Hsinchu', position: [120.99, 24.80], radiusKm: 2.5, value: 100, hitPoints: 5, currentHitPoints: 5, status: 'operational' },
+  { id: 'tsmc-hsinchu-hq', name: 'TSMC Hsinchu', position: [120.99, 24.80], radiusKm: 2.5, value: 100, hitPoints: 5, currentHitPoints: 5, status: 'operational' },
   { id: 'tsmc-taichung', name: 'TSMC Taichung', position: [120.68, 24.14], radiusKm: 1.5, value: 60, hitPoints: 4, currentHitPoints: 4, status: 'operational' },
-  { id: 'tsmc-tainan', name: 'TSMC Tainan', position: [120.27, 23.08], radiusKm: 2.0, value: 90, hitPoints: 5, currentHitPoints: 5, status: 'operational' },
+  { id: 'tsmc-tainan-fab18', name: 'TSMC Tainan', position: [120.27, 23.08], radiusKm: 2.0, value: 90, hitPoints: 5, currentHitPoints: 5, status: 'operational' },
   { id: 'tsmc-kaohsiung', name: 'TSMC Kaohsiung', position: [120.30, 22.63], radiusKm: 1.5, value: 80, hitPoints: 4, currentHitPoints: 4, status: 'operational' },
 ];
 

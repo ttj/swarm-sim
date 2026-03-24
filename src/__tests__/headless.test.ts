@@ -32,7 +32,7 @@ const interceptorAssetSpec: DefenseAssetSpec = {
 };
 
 const testFacility: Facility = {
-  id: 'tsmc-hsinchu',
+  id: 'tsmc-hsinchu-hq',
   name: 'TSMC Hsinchu',
   position: [120.99, 24.80],
   radiusKm: 2.5,
@@ -58,7 +58,7 @@ function createTestScenario(droneCount: number, defenseStock: number): Scenario 
         droneSpec: 'shahed-136',
         count: droneCount,
         origin: [119.3, 24.5],
-        target: 'tsmc-hsinchu',
+        target: 'tsmc-hsinchu-hq',
         approachBearing: 90,
         formation: 'dispersed',
       }],
@@ -136,9 +136,9 @@ describe('HeadlessRunner', () => {
       const scenario = createTestScenario(10, 20);
       const result = runHeadless(scenario, [shahedSpec], [interceptorAssetSpec], 42);
 
-      expect(result.facilitySurvivalMap).toHaveProperty('tsmc-hsinchu');
+      expect(result.facilitySurvivalMap).toHaveProperty('tsmc-hsinchu-hq');
       expect(['operational', 'damaged', 'destroyed']).toContain(
-        result.facilitySurvivalMap['tsmc-hsinchu']
+        result.facilitySurvivalMap['tsmc-hsinchu-hq']
       );
     });
 
@@ -208,8 +208,8 @@ describe('HeadlessRunner', () => {
       const scenario = createTestScenario(30, 15);
       const results = runMonteCarlo(scenario, [shahedSpec], [interceptorAssetSpec], 50);
 
-      expect(results.facilityDestructionProb).toHaveProperty('tsmc-hsinchu');
-      const prob = results.facilityDestructionProb['tsmc-hsinchu'];
+      expect(results.facilityDestructionProb).toHaveProperty('tsmc-hsinchu-hq');
+      const prob = results.facilityDestructionProb['tsmc-hsinchu-hq'];
       expect(prob).toBeGreaterThanOrEqual(0);
       expect(prob).toBeLessThanOrEqual(1);
     });

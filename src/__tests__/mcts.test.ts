@@ -12,7 +12,7 @@ import { RandomStream } from '../engine/RandomStream';
 function createTestState(overrides?: Partial<MCTSState>): MCTSState {
   const zones: ZoneState[] = [
     {
-      facilityId: 'tsmc-hsinchu',
+      facilityId: 'tsmc-hsinchu-hq',
       facilityName: 'Hsinchu',
       facilityValue: 100,
       facilityHpRemaining: 5,
@@ -21,7 +21,7 @@ function createTestState(overrides?: Partial<MCTSState>): MCTSState {
       incomingDrones: 100,
     },
     {
-      facilityId: 'tsmc-tainan',
+      facilityId: 'tsmc-tainan-fab18',
       facilityName: 'Tainan',
       facilityValue: 90,
       facilityHpRemaining: 5,
@@ -206,7 +206,7 @@ describe('MCTS Engine', () => {
       const state = createTestState({
         zones: [
           {
-            facilityId: 'tsmc-hsinchu',
+            facilityId: 'tsmc-hsinchu-hq',
             facilityName: 'Hsinchu',
             facilityValue: 100,
             facilityHpRemaining: 5,
@@ -215,7 +215,7 @@ describe('MCTS Engine', () => {
             incomingDrones: 200, // Heavy attack
           },
           {
-            facilityId: 'tsmc-tainan',
+            facilityId: 'tsmc-tainan-fab18',
             facilityName: 'Tainan',
             facilityValue: 50, // Lower value
             facilityHpRemaining: 5,

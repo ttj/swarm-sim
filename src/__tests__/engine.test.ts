@@ -64,7 +64,7 @@ const interceptorAssetSpec: DefenseAssetSpec = {
 };
 
 const testFacility: Facility = {
-  id: 'tsmc-hsinchu',
+  id: 'tsmc-hsinchu-hq',
   name: 'TSMC Hsinchu',
   position: [120.99, 24.80],
   radiusKm: 2.5,
@@ -596,7 +596,7 @@ describe('SimulationEngine', () => {
           droneSpec: 'shahed-136',
           count: 10,
           origin: [119.3, 24.5] as [number, number],
-          target: 'tsmc-hsinchu',
+          target: 'tsmc-hsinchu-hq',
           approachBearing: 90,
           formation: 'dispersed',
         }],

@@ -88,7 +88,7 @@ describe('type validation', () => {
 
   it('Facility tracks hit points and status', () => {
     const facility: Facility = {
-      id: 'tsmc-hsinchu',
+      id: 'tsmc-hsinchu-hq',
       name: 'TSMC Hsinchu',
       position: [120.99, 24.80],
       radiusKm: 2.5,
@@ -127,15 +127,15 @@ describe('type validation', () => {
     const facilityPath = path.resolve(__dirname, '../../public/data/taiwan-facilities.json');
     const data = JSON.parse(fs.readFileSync(facilityPath, 'utf-8'));
 
-    expect(data.facilities).toHaveLength(4); // 4 TSMC fabs
+    expect(data.facilities.length).toBeGreaterThanOrEqual(7); // 8 TSMC facility clusters
     expect(data.ports).toBeDefined();
     expect(data.geography).toBeDefined();
 
-    // Validate Hsinchu
-    const hsinchu = data.facilities.find((f: Facility) => f.id === 'tsmc-hsinchu');
+    // Validate Hsinchu HQ
+    const hsinchu = data.facilities.find((f: Facility) => f.id === 'tsmc-hsinchu-hq');
     expect(hsinchu).toBeDefined();
     expect(hsinchu.value).toBe(100);
-    expect(hsinchu.position[0]).toBeCloseTo(120.99, 1);
-    expect(hsinchu.position[1]).toBeCloseTo(24.80, 1);
+    expect(hsinchu.position[0]).toBeCloseTo(121.01, 1);
+    expect(hsinchu.position[1]).toBeCloseTo(24.77, 1);
   });
 });

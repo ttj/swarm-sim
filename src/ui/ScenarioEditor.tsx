@@ -11,8 +11,8 @@ const STRATEGIES: { value: RedStrategyType; label: string }[] = [
 ];
 
 const TARGETS = [
-  { id: 'tsmc-hsinchu', label: 'Hsinchu' },
-  { id: 'tsmc-tainan', label: 'Tainan' },
+  { id: 'tsmc-hsinchu-hq', label: 'Hsinchu' },
+  { id: 'tsmc-tainan-fab18', label: 'Tainan' },
   { id: 'tsmc-kaohsiung', label: 'Kaohsiung' },
   { id: 'tsmc-taichung', label: 'Taichung' },
 ];
@@ -21,7 +21,7 @@ export default function ScenarioEditor() {
   const { facilities } = useSimulationStore();
 
   const [droneCount, setDroneCount] = useState(500);
-  const [targetId, setTargetId] = useState('tsmc-hsinchu');
+  const [targetId, setTargetId] = useState('tsmc-hsinchu-hq');
   const [gpsJamming, setGpsJamming] = useState(false);
   const [strategy, setStrategy] = useState<RedStrategyType>('saturation_rush');
   const [durationHours, setDurationHours] = useState(4);
