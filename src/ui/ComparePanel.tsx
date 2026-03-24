@@ -7,7 +7,7 @@ let catalogCache: { droneSpecs: DroneSpec[]; assetSpecs: DefenseAssetSpec[] } | 
 
 async function getCatalog() {
   if (catalogCache) return catalogCache;
-  const res = await fetch('/data/drone-catalog.json');
+  const res = await fetch(`${import.meta.env.BASE_URL}data/drone-catalog.json`);
   const data = await res.json();
   catalogCache = {
     droneSpecs: [...data.attackDrones, ...data.defenseDrones],

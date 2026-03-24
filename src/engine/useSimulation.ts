@@ -13,7 +13,7 @@ async function loadCatalog(): Promise<{ droneSpecs: DroneSpec[]; assetSpecs: Def
     return { droneSpecs: cachedDroneSpecs, assetSpecs: cachedAssetSpecs };
   }
 
-  const res = await fetch('/data/drone-catalog.json');
+  const res = await fetch(`${import.meta.env.BASE_URL}data/drone-catalog.json`);
   const data = await res.json();
 
   cachedDroneSpecs = [...data.attackDrones, ...data.defenseDrones] as DroneSpec[];

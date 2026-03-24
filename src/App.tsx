@@ -12,7 +12,7 @@ function App() {
 
   // Load facility data on mount
   useEffect(() => {
-    fetch('/data/taiwan-facilities.json')
+    fetch(`${import.meta.env.BASE_URL}data/taiwan-facilities.json`)
       .then((res) => res.json())
       .then((data) => {
         const facilities: Facility[] = data.facilities.map(
