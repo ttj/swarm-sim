@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { useSimulationStore } from '../store/SimulationStore';
 import { useUIStore } from '../store/UIStore';
+import { saveDefenseConfig, loadAllConfigs, deleteConfig, type SavedDefenseConfig } from '../utils/saveload';
 import type { DefenseAssetType } from '../types';
 
 interface AssetTemplate {
@@ -162,6 +164,63 @@ export default function AssetPalette() {
                   ×
                 </button>
               )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Save/Load */}
+      <SaveLoadSection defenseAssets={defenseAssets} setDefenseAssets={setDefenseAssets} />
+    </div>
+  );
+}
+
+function SaveLoadSection({ defenseAssets, setDefenseAssets }: {
+  defenseAssets: any[];
+  setDefenseAssets: (a: any[]) => void;
+}) {
+  const [saveName, setSaveName] = useState('');
+  const [configs, setConfigs] = useState<SavedDefenseConfig[]>(() => loadAllConfigs());
+
+  const handleSave = () => {
+    if (!saveName.trim() || defenseAssets.length === 0) return;
+    saveDefenseConfig(saveName.trim(), defenseAssets);
+    setConfigs(loadAllConfigs());
+    setSaveName('');
+  };
+
+  const handleLoad = (config: SavedDefenseConfig) => {
+    setDefenseAssets(config.assets.map((a, i) => ({ ...a, instanceId: 40000 + i })));
+  };
+
+  const handleDelete = (index: number) => {
+    deleteConfig(index);
+    setConfigs(loadAllConfigs());
+  };
+
+  return (
+    <div className="save-load-section">
+      <h4>Save / Load Layouts</h4>
+      <div className="save-row">
+        <input
+          type="text"
+          placeholder="Layout name..."
+          value={saveName}
+          onChange={(e) => setSaveName(e.target.value)}
+          className="save-input"
+        />
+        <button className="save-btn" onClick={handleSave} disabled={!saveName.trim() || defenseAssets.length === 0}>
+          Save
+        </button>
+      </div>
+      {configs.length > 0 && (
+        <div className="saved-configs">
+          {configs.map((c, i) => (
+            <div key={i} className="saved-config-row">
+              <span className="saved-config-name" onClick={() => handleLoad(c)} title="Click to load">
+                {c.name} ({c.assets.length} assets)
+              </span>
+              <button className="remove-btn" onClick={() => handleDelete(i)}>×</button>
             </div>
           ))}
         </div>

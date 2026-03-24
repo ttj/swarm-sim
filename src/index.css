@@ -389,6 +389,69 @@ html, body, #root {
   color: #fff;
 }
 
+/* Save/Load */
+.save-load-section {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.save-load-section h4 {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.save-row {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.save-input {
+  flex: 1;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 3px 6px;
+  font-size: 10px;
+}
+
+.save-btn {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 3px 8px;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.save-btn:hover:not(:disabled) { background: var(--accent-blue); }
+.save-btn:disabled { opacity: 0.4; }
+
+.saved-configs {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.saved-config-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+}
+
+.saved-config-name {
+  color: var(--accent-blue);
+  cursor: pointer;
+  flex: 1;
+}
+
+.saved-config-name:hover { text-decoration: underline; }
+
 .asset-card-header {
   display: flex;
   justify-content: space-between;

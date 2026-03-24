@@ -146,6 +146,9 @@ export class SimulationEngine {
         gpsJammingActive: this.scenario.redForce.gpsJammingActive,
         currentTimeSec: this.currentTimeSec,
         c2DamageLevel: this.c2DamageLevel,
+        visibility: this.scenario.environment.visibility,
+        timeOfDay: this.scenario.environment.timeOfDay,
+        seaState: this.scenario.environment.seaState,
       }
     );
     tickEvents.push(...combatEvents);

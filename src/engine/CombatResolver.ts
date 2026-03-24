@@ -3,10 +3,13 @@ import { distanceKm } from '../utils/geo';
 import { RandomStream } from './RandomStream';
 import { CostTracker } from './CostTracker';
 
-interface CombatContext {
+export interface CombatContext {
   gpsJammingActive: boolean;
   currentTimeSec: number;
   c2DamageLevel: number; // 0-1, 0 = fully operational, 1 = destroyed
+  visibility: 'clear' | 'overcast' | 'fog';
+  timeOfDay: 'day' | 'night';
+  seaState: number; // 1-5
 }
 
 /**
@@ -181,11 +184,27 @@ export class CombatResolver {
       decoyMod = Math.max(0.2, 1.0 - simHours * 0.05);
     }
 
+    // Weather/environment modifiers
+    let weatherMod = 1.0;
+    // Fog reduces detection range → lower pkill for all systems
+    if (context.visibility === 'fog') weatherMod *= 0.6;
+    else if (context.visibility === 'overcast') weatherMod *= 0.85;
+    // Night degrades visual detection (but IR/radar still works)
+    if (context.timeOfDay === 'night') {
+      if (assetSpec.type === 'directed_energy') weatherMod *= 1.0; // DE unaffected
+      else if (assetSpec.type === 'ew_jammer') weatherMod *= 1.0; // EW unaffected
+      else weatherMod *= 0.8; // Interceptors less effective at night
+    }
+    // High sea state degrades sea-surface operations
+    if (context.seaState >= 4 && droneSpec.domain === 'air') {
+      // Rough seas don't affect air drones much, but affect sea-launched accuracy
+    }
+
     // Saturation modifier (core mechanic)
     // C2 damage degrades coordination
     const c2Mod = 1.0 - context.c2DamageLevel * 0.5;
 
-    pkill = pkill * rangeMod * guidanceMod * saturationMod * c2Mod * decoyMod;
+    pkill = pkill * rangeMod * guidanceMod * saturationMod * c2Mod * decoyMod * weatherMod;
 
     return Math.max(0, Math.min(1, pkill));
   }
