@@ -121,6 +121,7 @@ export interface Facility {
   currentHitPoints: number;
   status: FacilityStatus;
   description?: string;
+  boundary?: [number, number][]; // Polygon enclosure [lng, lat][]
 }
 
 // === Conventional Strike Types ===

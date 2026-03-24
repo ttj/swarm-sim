@@ -308,7 +308,32 @@ export default function MapContainer() {
     const now = performance.now();
     const layers: any[] = [];
 
-    // === RANGE RINGS (lowest z-order, drawn first) ===
+    // === FACILITY BOUNDARY ENCLOSURES (lowest z-order) ===
+    const facilitiesWithBoundary = facilities.filter((f) => f.boundary && f.boundary.length >= 3);
+    if (facilitiesWithBoundary.length > 0) {
+      layers.push(
+        new PolygonLayer<Facility>({
+          id: 'facility-boundaries',
+          data: facilitiesWithBoundary,
+          getPolygon: (d) => [...d.boundary!, d.boundary![0]], // Close the polygon
+          getFillColor: (d) =>
+            d.status === 'operational' ? [255, 200, 50, 15] :
+            d.status === 'damaged' ? [255, 140, 0, 20] :
+            [150, 50, 50, 20],
+          getLineColor: (d) =>
+            d.status === 'operational' ? [255, 200, 50, 120] :
+            d.status === 'damaged' ? [255, 140, 0, 150] :
+            [150, 50, 50, 100],
+          getLineWidth: 2,
+          lineWidthMinPixels: 1,
+          filled: true,
+          stroked: true,
+          pickable: true,
+        })
+      );
+    }
+
+    // === RANGE RINGS ===
     const rangeRings = buildRangeRings(defenseAssets);
     if (rangeRings.length > 0) {
       layers.push(

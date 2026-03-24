@@ -7,7 +7,10 @@
       "radiusKm": 1.5,
       "value": 100,
       "hitPoints": 6,
-      "description": "Corporate HQ + Fab 12A GIGAFAB (12-inch, 28nm-90nm). 8 Li-Hsin Rd 6, Hsinchu Science Park."
+      "description": "Corporate HQ + Fab 12A GIGAFAB (12-inch, 28nm-90nm). 8 Li-Hsin Rd 6, Hsinchu Science Park.",
+      "boundary": [
+        [121.005, 24.774], [121.019, 24.774], [121.019, 24.766], [121.005, 24.766]
+      ]
     },
     {
       "id": "tsmc-hsinchu-fabs",
@@ -16,7 +19,10 @@
       "radiusKm": 1.5,
       "value": 50,
       "hitPoints": 5,
-      "description": "Mature 8-inch fabs: Fab 2, 3, 5, 8 (80nm-350nm). 121 Park Ave 3 & 9 Creation Rd 1, Hsinchu Science Park."
+      "description": "Mature 8-inch fabs: Fab 2, 3, 5, 8 (80nm-350nm). 121 Park Ave 3 & 9 Creation Rd 1, Hsinchu Science Park.",
+      "boundary": [
+        [120.990, 24.786], [121.006, 24.786], [121.006, 24.776], [120.990, 24.776]
+      ]
     },
     {
       "id": "tsmc-baoshan",
@@ -25,7 +31,10 @@
       "radiusKm": 1.5,
       "value": 95,
       "hitPoints": 5,
-      "description": "Fab 20 P1-P4: 2nm volume production (Q4 2025), 1.4nm planned. 32.73 hectares, Baoshan Township, Hsinchu County."
+      "description": "Fab 20 P1-P4: 2nm volume production (Q4 2025), 1.4nm planned. 32.73 hectares, Baoshan Township.",
+      "boundary": [
+        [121.000, 24.763], [121.016, 24.763], [121.016, 24.753], [121.000, 24.753]
+      ]
     },
     {
       "id": "tsmc-longtan",
@@ -34,7 +43,10 @@
       "radiusKm": 1.0,
       "value": 40,
       "hitPoints": 3,
-      "description": "Advanced packaging/backend campus. 101 Longyuan 6th Rd, Longtan District, Taoyuan City."
+      "description": "Advanced packaging/backend campus. 101 Longyuan 6th Rd, Longtan District, Taoyuan City.",
+      "boundary": [
+        [121.211, 24.868], [121.223, 24.868], [121.223, 24.860], [121.211, 24.860]
+      ]
     },
     {
       "id": "tsmc-taichung",
@@ -43,7 +55,10 @@
       "radiusKm": 2.0,
       "value": 75,
       "hitPoints": 5,
-      "description": "Fab 15A (28nm) + Fab 15B (3nm-7nm). Central Taiwan Science Park, Taichung. Fab 25 (1.4nm) under construction."
+      "description": "Fab 15A (28nm) + Fab 15B (3nm-7nm). Central Taiwan Science Park. Fab 25 (1.4nm) under construction.",
+      "boundary": [
+        [120.633, 24.263], [120.657, 24.263], [120.657, 24.247], [120.633, 24.247]
+      ]
     },
     {
       "id": "tsmc-tainan-fab14",
@@ -52,7 +67,10 @@
       "radiusKm": 2.0,
       "value": 85,
       "hitPoints": 5,
-      "description": "Fab 6 + Fab 14A/14B GIGAFAB (3nm-7nm, 16nm, 28nm). 1-1 Nan-Ke North Rd, Southern Taiwan Science Park."
+      "description": "Fab 6 + Fab 14A/14B GIGAFAB (3nm-7nm, 16nm, 28nm). 1-1 Nan-Ke North Rd, Southern Taiwan Science Park.",
+      "boundary": [
+        [120.271, 23.108], [120.293, 23.108], [120.293, 23.094], [120.271, 23.094]
+      ]
     },
     {
       "id": "tsmc-tainan-fab18",
@@ -61,7 +79,10 @@
       "radiusKm": 2.0,
       "value": 90,
       "hitPoints": 5,
-      "description": "Fab 18A/18B GIGAFAB: 5nm + 3nm, 100K+ wafers/month. 8 Beiyuan Rd 2, Southern Taiwan Science Park."
+      "description": "Fab 18A/18B GIGAFAB: 5nm + 3nm, 100K+ wafers/month. 8 Beiyuan Rd 2, STSP. ~42 hectares.",
+      "boundary": [
+        [120.251, 23.122], [120.271, 23.122], [120.271, 23.110], [120.251, 23.110]
+      ]
     },
     {
       "id": "tsmc-kaohsiung",
@@ -70,7 +91,10 @@
       "radiusKm": 2.0,
       "value": 90,
       "hitPoints": 5,
-      "description": "Fab 22: 2nm volume production (Dec 2025). Nanzih Technology Industrial Park, 17.22 hectares. Up to 5 fabs planned."
+      "description": "Fab 22: 2nm volume production. Nanzih Tech Park, 17.22 hectares (up to 79ha for TSMC). Up to 5 fabs planned.",
+      "boundary": [
+        [120.295, 22.725], [120.319, 22.725], [120.319, 22.713], [120.295, 22.713]
+      ]
     }
   ],
   "ports": [
