@@ -83,6 +83,7 @@ export default function SimControls() {
         <div className="control-group">
           <button
             className="control-btn"
+            data-action="play-pause"
             onClick={() => setIsRunning(!isRunning)}
             title={isRunning ? 'Pause' : 'Play'}
             disabled={!activeScenario}
@@ -91,6 +92,7 @@ export default function SimControls() {
           </button>
           <button
             className="control-btn"
+            data-action="reset"
             onClick={handleReset}
             title="Reset"
           >
