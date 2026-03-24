@@ -67,7 +67,7 @@ export class CombatResolver {
       const saturationMod = Math.min(1.0, asset.currentStock / inRange.length);
 
       // Process engagements based on asset type
-      const engagementsThisTick = this.getEngagementsPerTick(spec);
+      const engagementsThisTick = this.getEngagementsPerTick(spec, asset.currentStock);
 
       for (let i = 0; i < Math.min(engagementsThisTick, inRange.length); i++) {
         if (asset.currentStock <= 0) break;
@@ -192,19 +192,23 @@ export class CombatResolver {
 
   /**
    * How many engagements this asset can process per tick (10 seconds).
+   * Interceptor squads scale with stock: a squad of 80 drones can engage
+   * multiple targets simultaneously (each interceptor drone engages one target).
    */
-  private getEngagementsPerTick(spec: DefenseAssetSpec): number {
+  private getEngagementsPerTick(spec: DefenseAssetSpec, currentStock?: number): number {
     switch (spec.type) {
       case 'directed_energy':
         return 2; // ~5s per engagement
       case 'ew_jammer':
-        return 5; // Affects multiple simultaneously
+        return 10; // Affects many simultaneously within range
       case 'interceptor_squad':
-        return 1;
+        // A squad launches interceptors in parallel — scales with stock
+        // Each tick, up to 20% of remaining stock can engage (launch rate)
+        return Math.max(1, Math.floor((currentStock ?? spec.capacity) * 0.2));
       case 'net_launcher':
         return 1;
       case 'decoy_emitter':
-        return 3; // Diverts multiple
+        return 5; // Diverts multiple
       case 'patriot_battery':
         return 1;
       default:

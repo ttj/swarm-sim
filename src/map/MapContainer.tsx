@@ -13,8 +13,10 @@ import type { MapStyle, DroneInstance, DefenseAssetInstance, Facility } from '..
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
 const useMapbox = Boolean(MAPBOX_TOKEN);
 
-function getStyleUrl(style: MapStyle): string {
-  return useMapbox ? MAPBOX_STYLES[style] : MAPLIBRE_STYLES[style];
+function getStyle(style: MapStyle): string | maplibregl.StyleSpecification {
+  if (useMapbox) return MAPBOX_STYLES[style];
+  const s = MAPLIBRE_STYLES[style];
+  return s as string | maplibregl.StyleSpecification;
 }
 
 interface EngagementFlash {
@@ -155,7 +157,7 @@ export default function MapContainer() {
 
     const mapOptions: maplibregl.MapOptions = {
       container: containerRef.current,
-      style: getStyleUrl(mapStyle),
+      style: getStyle(mapStyle),
       center: MAP_CENTER,
       zoom: MAP_DEFAULT_ZOOM,
       minZoom: 5,
@@ -227,7 +229,7 @@ export default function MapContainer() {
   // Style switching
   useEffect(() => {
     if (!mapRef.current) return;
-    mapRef.current.setStyle(getStyleUrl(mapStyle));
+    mapRef.current.setStyle(getStyle(mapStyle));
   }, [mapStyle]);
 
   // Draggable defense asset markers

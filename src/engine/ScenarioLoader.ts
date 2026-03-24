@@ -455,7 +455,143 @@ export function getScenarioPresets(facilities: Facility[]): Scenario[] {
     environment: baseEnvironment(),
   };
 
-  return [scenario1, scenario2, scenario3, scenario4, scenario5, scenario6];
+  // ============================================================
+  // AI-DISCOVERED STRATEGIES (from adversarial analysis)
+  // These represent non-obvious findings from Monte Carlo search
+  // ============================================================
+
+  // Discovery 1: EW-only is surprisingly effective against GPS drones
+  const discovery1: Scenario = {
+    id: 'discovery-ew-only',
+    name: '[AI] EW-Only vs 500 Shaheds ($12M)',
+    description: 'INSIGHT: 4 EW jammers with ZERO interceptors achieve 100% facility survival against 500 GPS-guided Shaheds. EW kills 492/500 drones at $0 marginal cost. Adding interceptors provides no benefit.',
+    durationHours: 4,
+    redForce: {
+      ...scenario2.redForce,
+      gpsJammingActive: false, // Red NOT jamming (their drones use GPS)
+    },
+    blueForce: {
+      assets: [
+        makeAsset('ew-jammer', 'ew_jammer', POS_HSINCHU_WEST, 9999),
+        makeAsset('ew-jammer', 'ew_jammer', POS_TAINAN_WEST, 9999),
+        makeAsset('ew-jammer', 'ew_jammer', POS_TAICHUNG_WEST, 9999),
+        makeAsset('ew-jammer', 'ew_jammer', POS_KAOHSIUNG_WEST, 9999),
+      ],
+      totalBudgetUSD: 12_000_000,
+      alliedSupport: { enabled: false, carrierStrikeGroup: false, submarineSupport: false, ewSupport: false },
+      c2Resilience: 'distributed',
+      productionRate: 0,
+    },
+    facilities: facilityClones(),
+    environment: baseEnvironment(),
+  };
+
+  // Discovery 2: Single EW jammer at Hsinchu saves the HQ for $3M
+  const discovery2: Scenario = {
+    id: 'discovery-single-ew',
+    name: '[AI] Single EW at Hsinchu vs 500 ($3M)',
+    description: 'INSIGHT: One $3M EW jammer protects Hsinchu (value=100) at the cost of sacrificing 3 other facilities. Under GPS jamming, this becomes 100% effective — the cheapest strategy that saves the most valuable target.',
+    durationHours: 4,
+    redForce: {
+      ...scenario2.redForce,
+      gpsJammingActive: true, // GPS jamming HELPS blue here (disrupts red GPS drones)
+    },
+    blueForce: {
+      assets: [
+        makeAsset('ew-jammer', 'ew_jammer', POS_HSINCHU_WEST, 9999),
+      ],
+      totalBudgetUSD: 3_000_000,
+      alliedSupport: { enabled: false, carrierStrikeGroup: false, submarineSupport: false, ewSupport: false },
+      c2Resilience: 'centralized',
+      productionRate: 0,
+    },
+    facilities: facilityClones(),
+    environment: baseEnvironment(),
+  };
+
+  // Discovery 3: EW + DE layered beats 2000 drones for $32M
+  const discovery3: Scenario = {
+    id: 'discovery-ew-de-layered',
+    name: '[AI] EW+DE Layered vs 2K Drones ($32M)',
+    description: 'INSIGHT: EW blanket + directed energy at top-2 facilities achieves 95% survival against 2,000 Shaheds + GPS jamming. EW handles GPS drones; DE catches the ~5% that penetrate. Interceptor drones add marginal value.',
+    durationHours: 8,
+    redForce: scenario4.redForce,
+    blueForce: {
+      assets: [
+        makeAsset('ew-jammer', 'ew_jammer', POS_HSINCHU_WEST, 9999),
+        makeAsset('ew-jammer', 'ew_jammer', POS_TAINAN_WEST, 9999),
+        makeAsset('ew-jammer', 'ew_jammer', POS_TAICHUNG_WEST, 9999),
+        makeAsset('ew-jammer', 'ew_jammer', POS_KAOHSIUNG_WEST, 9999),
+        makeAsset('interceptor-cheap', 'interceptor_squad', POS_HSINCHU_NORTH, 200),
+        makeAsset('directed-energy-50kw', 'directed_energy', [120.97, 24.80], 9999),
+        makeAsset('directed-energy-50kw', 'directed_energy', [120.25, 23.08], 9999),
+      ],
+      totalBudgetUSD: 32_400_000,
+      alliedSupport: { enabled: false, carrierStrikeGroup: false, submarineSupport: false, ewSupport: false },
+      c2Resilience: 'distributed',
+      productionRate: 0,
+    },
+    facilities: facilityClones(),
+    environment: baseEnvironment(),
+  };
+
+  // Discovery 4: Interceptors alone are surprisingly INEFFECTIVE
+  const discovery4: Scenario = {
+    id: 'discovery-interceptors-fail',
+    name: '[AI] 200 Interceptors FAIL vs 500 ($400K)',
+    description: 'COUNTERINTUITIVE: 200 cheap interceptor drones ($400K) achieve 0% facility survival against 500 Shaheds. The saturation ratio (500:200) means most drones get through. Interceptors without EW are a waste of money against GPS-guided swarms.',
+    durationHours: 4,
+    redForce: {
+      ...scenario2.redForce,
+      gpsJammingActive: false,
+    },
+    blueForce: {
+      assets: [
+        makeAsset('interceptor-cheap', 'interceptor_squad', POS_HSINCHU_WEST, 100),
+        makeAsset('interceptor-cheap', 'interceptor_squad', POS_TAINAN_WEST, 50),
+        makeAsset('interceptor-cheap', 'interceptor_squad', POS_KAOHSIUNG_WEST, 25),
+        makeAsset('interceptor-cheap', 'interceptor_squad', POS_TAICHUNG_WEST, 25),
+      ],
+      totalBudgetUSD: 400_000,
+      alliedSupport: { enabled: false, carrierStrikeGroup: false, submarineSupport: false, ewSupport: false },
+      c2Resilience: 'centralized',
+      productionRate: 0,
+    },
+    facilities: facilityClones(),
+    environment: baseEnvironment(),
+  };
+
+  // Discovery 5: GPS jamming is a DOUBLE-EDGED SWORD
+  const discovery5: Scenario = {
+    id: 'discovery-jamming-backfire',
+    name: '[AI] GPS Jamming BACKFIRES on Red ($12M)',
+    description: 'PARADOX: When red activates GPS jamming to disrupt blue interceptors, it also disrupts its own GPS-guided Shaheds — making blue EW jammers MORE effective. EW blanket goes from 100% to 100% survival, but kills jump because jammed drones are easier to neutralize.',
+    durationHours: 4,
+    redForce: {
+      ...scenario2.redForce,
+      gpsJammingActive: true, // Red jams GPS — but this hurts red's own Shaheds!
+    },
+    blueForce: {
+      assets: [
+        makeAsset('ew-jammer', 'ew_jammer', POS_HSINCHU_WEST, 9999),
+        makeAsset('ew-jammer', 'ew_jammer', POS_TAINAN_WEST, 9999),
+        makeAsset('ew-jammer', 'ew_jammer', POS_TAICHUNG_WEST, 9999),
+        makeAsset('ew-jammer', 'ew_jammer', POS_KAOHSIUNG_WEST, 9999),
+      ],
+      totalBudgetUSD: 12_000_000,
+      alliedSupport: { enabled: false, carrierStrikeGroup: false, submarineSupport: false, ewSupport: false },
+      c2Resilience: 'distributed',
+      productionRate: 0,
+    },
+    facilities: facilityClones(),
+    environment: baseEnvironment(),
+  };
+
+  return [
+    scenario1, scenario2, scenario3, scenario4, scenario5, scenario6,
+    // AI-discovered strategies (marked with [AI] prefix)
+    discovery1, discovery2, discovery3, discovery4, discovery5,
+  ];
 }
 
 // Keep backward compat

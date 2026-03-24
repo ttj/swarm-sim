@@ -19,10 +19,33 @@ export const GRID_CELL_KM = 10;
 export const SPEED_PRESETS = [1, 10, 100, 1000];
 
 // MapLibre style URLs (free, no token needed)
-export const MAPLIBRE_STYLES: Record<string, string> = {
+// Satellite uses ESRI World Imagery (free for non-commercial/dev use)
+export const MAPLIBRE_STYLES: Record<string, string | object> = {
   streets: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
   terrain: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
-  satellite: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+  satellite: {
+    version: 8,
+    sources: {
+      'esri-satellite': {
+        type: 'raster',
+        tiles: [
+          'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        ],
+        tileSize: 256,
+        maxzoom: 18,
+        attribution: 'Esri, Maxar, Earthstar Geographics',
+      },
+    },
+    layers: [
+      {
+        id: 'esri-satellite-layer',
+        type: 'raster',
+        source: 'esri-satellite',
+        minzoom: 0,
+        maxzoom: 18,
+      },
+    ],
+  },
 };
 
 // Mapbox style URLs (requires token)
