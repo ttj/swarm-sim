@@ -89,5 +89,7 @@ export const useSimulationStore = create<SimulationStore>((set) => ({
   setMcIsRunning: (running) => set({ mcIsRunning: running }),
   setMcProgress: (progress) => set({ mcProgress: progress }),
   setMcResults: (results) => set({ mcResults: results }),
+  // Seek function: set by useSimulation hook, called by TimelineBar
+  seekTo: null as ((timeSec: number) => void) | null,
   reset: () => set(initialState),
 }));

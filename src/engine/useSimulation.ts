@@ -110,9 +110,32 @@ export function useSimulation() {
     engineRef.current = null;
   }, []);
 
-  // Expose resetSimState on the store for SimControls to call
+  // Expose resetSimState and seekTo on the store
   useEffect(() => {
     (useSimulationStore as any)._resetSim = resetSimState;
+
+    // Seek to a point in time using snapshots
+    (useSimulationStore as any).seekTo = (timeSec: number) => {
+      const engine = engineRef.current;
+      if (!engine) return;
+
+      const snapshot = engine.getSnapshotAt(timeSec);
+      if (!snapshot) return;
+
+      // Pause sim
+      useSimulationStore.getState().setIsRunning(false);
+
+      // Restore snapshot state to store
+      const store = useSimulationStore.getState();
+      store.setDrones([...snapshot.drones]);
+      store.setVessels([...snapshot.vessels]);
+      store.setDefenseAssets([...snapshot.defenseAssets]);
+      store.setFacilities([...snapshot.facilities]);
+      store.setCurrentTimeSec(snapshot.timeSec);
+      store.setCosts(snapshot.costs);
+      store.setDronesDestroyed(snapshot.dronesDestroyed);
+      store.setVesselsDestroyed(snapshot.vesselsDestroyed);
+    };
   }, [resetSimState]);
 
   // Simulation loop: starts when isRunning becomes true

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback, useRef } from 'react';
 import { useSimulationStore } from '../store/SimulationStore';
 
 function formatTime(sec: number): string {
@@ -7,7 +7,6 @@ function formatTime(sec: number): string {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
-/** Key event markers on the timeline */
 interface TimelineMarker {
   timeSec: number;
   type: string;
@@ -19,11 +18,11 @@ export default function TimelineBar() {
   const events = useSimulationStore((s) => s.events);
   const currentTimeSec = useSimulationStore((s) => s.currentTimeSec);
   const activeScenario = useSimulationStore((s) => s.activeScenario);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   const durationSec = (activeScenario?.durationHours ?? 24) * 3600;
   const progress = durationSec > 0 ? (currentTimeSec / durationSec) * 100 : 0;
 
-  // Build key event markers (wave launches, facility hits, facility destroyed)
   const markers = useMemo(() => {
     const m: TimelineMarker[] = [];
     const seen = new Set<string>();
@@ -45,7 +44,7 @@ export default function TimelineBar() {
         m.push({
           timeSec: evt.timeSec,
           type: evt.type,
-          label: evt.description.slice(0, 30),
+          label: evt.description.slice(0, 40),
           color: colors[evt.type] ?? '#666',
         });
       }
@@ -53,13 +52,31 @@ export default function TimelineBar() {
     return m;
   }, [events]);
 
+  /** Click on timeline to seek to that point */
+  const handleTrackClick = useCallback((e: React.MouseEvent) => {
+    if (!trackRef.current || durationSec <= 0) return;
+
+    const rect = trackRef.current.getBoundingClientRect();
+    const fraction = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const targetSec = fraction * durationSec;
+
+    // Call seekTo via the store
+    const seekTo = (useSimulationStore as any).seekTo;
+    if (seekTo) {
+      seekTo(targetSec);
+    }
+  }, [durationSec]);
+
   return (
     <div className="timeline-container">
-      {/* Timeline track */}
-      <div className="timeline-track">
+      <div
+        className="timeline-track"
+        ref={trackRef}
+        onClick={handleTrackClick}
+        title="Click to seek (after running simulation)"
+      >
         <div className="timeline-fill" style={{ width: `${Math.min(progress, 100)}%` }} />
 
-        {/* Event markers */}
         {markers.map((m, i) => {
           const pos = durationSec > 0 ? (m.timeSec / durationSec) * 100 : 0;
           return (
@@ -72,11 +89,9 @@ export default function TimelineBar() {
           );
         })}
 
-        {/* Playhead */}
         <div className="timeline-playhead" style={{ left: `${Math.min(progress, 100)}%` }} />
       </div>
 
-      {/* Time labels */}
       <div className="timeline-labels">
         <span>00:00</span>
         <span>{formatTime(durationSec / 4)}</span>

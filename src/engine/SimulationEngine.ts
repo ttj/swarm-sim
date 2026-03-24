@@ -6,6 +6,7 @@ import { MovementModel } from './MovementModel';
 import { CombatResolver } from './CombatResolver';
 import { CostTracker } from './CostTracker';
 import { RandomStream } from './RandomStream';
+import { SnapshotStore, type SimSnapshot } from './SnapshotStore';
 import { SIM_TICK_SECONDS } from '../utils/constants';
 import { bearing, distanceKm } from '../utils/geo';
 
@@ -45,6 +46,7 @@ export class SimulationEngine {
   private strikesExecuted: Set<number> = new Set();
   private vesselWavesDeployed: Set<string> = new Set();
   private c2DamageLevel = 0; // 0-1
+  private snapshotStore = new SnapshotStore(60); // Snapshot every 60 ticks (10 sim-minutes)
 
   constructor(
     scenario: Scenario,
@@ -166,6 +168,9 @@ export class SimulationEngine {
 
     // 9. Advance time
     this.currentTimeSec += SIM_TICK_SECONDS;
+
+    // 10. Take periodic snapshot for replay
+    this.snapshotStore.maybeTakeSnapshot(this.getState());
 
     this.events.push(...tickEvents);
     return tickEvents;
@@ -469,6 +474,16 @@ export class SimulationEngine {
 
   getCurrentTimeSec(): number {
     return this.currentTimeSec;
+  }
+
+  /** Get the nearest snapshot to a given time (for replay scrubbing) */
+  getSnapshotAt(timeSec: number): SimSnapshot | null {
+    return this.snapshotStore.getSnapshotAt(timeSec);
+  }
+
+  /** Get all snapshots */
+  getSnapshots(): SimSnapshot[] {
+    return this.snapshotStore.getSnapshots();
   }
 }
 

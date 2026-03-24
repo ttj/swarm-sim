@@ -1129,6 +1129,11 @@ html, body, #root {
   background: var(--bg-dark);
   border-radius: 6px;
   overflow: visible;
+  cursor: pointer;
+}
+
+.timeline-track:hover {
+  background: #252540;
 }
 
 .timeline-fill {
