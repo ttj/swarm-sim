@@ -253,13 +253,39 @@ export interface MCTSResult {
 /**
  * Run MCTS search to find the best defensive move.
  */
+/**
+ * Generate legal moves for red (attack) side.
+ */
+export function getRedMoves(state: MCTSState): MCTSMove[] {
+  const moves: MCTSMove[] = [
+    { type: 'no_op', description: 'Continue current attack plan' },
+  ];
+
+  // Concentrate attack on highest-value zone
+  for (let i = 0; i < state.zones.length; i++) {
+    if (state.zones[i].facilityHpRemaining <= 0) continue;
+    moves.push({
+      type: 'reallocate',
+      description: `Focus all remaining drones on ${state.zones[i].facilityName}`,
+      toZone: i,
+    });
+  }
+
+  return moves;
+}
+
+/**
+ * Run MCTS search. Can search for best blue move (default)
+ * or best red move (adversarial, inverts reward).
+ */
 export function mctsSearch(
   state: MCTSState,
   iterations: number = 1000,
-  seed: number = 42
+  seed: number = 42,
+  side: 'blue' | 'red' = 'blue',
 ): MCTSResult {
   const rng = new RandomStream(seed);
-  const legalMoves = getLegalMoves(state);
+  const legalMoves = side === 'blue' ? getLegalMoves(state) : getRedMoves(state);
   const root = new MCTSNode(null, null, [...legalMoves]);
 
   for (let i = 0; i < iterations; i++) {
@@ -283,7 +309,9 @@ export function mctsSearch(
     }
 
     // Rollout
-    const reward = rollout(currentState, rng);
+    const rawReward = rollout(currentState, rng);
+    // Red wants to minimize blue survival, so invert reward
+    const reward = side === 'blue' ? rawReward : (1 - rawReward);
 
     // Backpropagation
     node.backpropagate(reward);

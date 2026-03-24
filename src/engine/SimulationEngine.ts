@@ -166,7 +166,10 @@ export class SimulationEngine {
     // 8. Anti-ship engagements against quarantine vessels
     this.processAntiShipEngagements(tickEvents);
 
-    // 9. Advance time
+    // 9. UUV mine-laying at port approaches
+    this.processUUVMineLaying(tickEvents);
+
+    // 10. Advance time
     this.currentTimeSec += SIM_TICK_SECONDS;
 
     // 10. Take periodic snapshot for replay
@@ -365,6 +368,62 @@ export class SimulationEngine {
         asset.currentStock--;
         this.costTracker.addCost('blue', asset.specId === 'hsiung-feng-3' ? 2500000 : 1500000);
         break; // One engagement per asset per tick
+      }
+    }
+  }
+
+  /**
+   * UUV mine-laying: deployed UUVs gradually mine port approaches,
+   * degrading facility HP over time (logistics disruption).
+   */
+  private uuvDeployed = false;
+  private uuvDamageTimer = 0;
+  private processUUVMineLaying(events: SimEvent[]): void {
+    const uuv = this.scenario.redForce.uuvDeployment;
+    if (uuv.count === 0) return;
+
+    // Deploy UUVs at T+30min
+    if (!this.uuvDeployed && this.currentTimeSec >= 1800) {
+      this.uuvDeployed = true;
+      events.push({
+        timeSec: this.currentTimeSec,
+        type: 'wave_start',
+        description: `${uuv.count} UUVs deployed — mining port approaches`,
+      });
+    }
+
+    if (!this.uuvDeployed) return;
+
+    // Every 30 sim-minutes, mines damage a targeted facility
+    this.uuvDamageTimer += SIM_TICK_SECONDS;
+    if (this.uuvDamageTimer < 1800) return;
+    this.uuvDamageTimer = 0;
+
+    for (const targetId of uuv.mineTargets) {
+      const facility = this.facilities.find((f) => f.id === targetId);
+      if (!facility || facility.status === 'destroyed') continue;
+
+      // 30% chance per interval that a mine detonates near the facility
+      if (this.rng.chance(0.3)) {
+        facility.currentHitPoints--;
+        if (facility.currentHitPoints <= 0) {
+          facility.currentHitPoints = 0;
+          facility.status = 'destroyed';
+          events.push({
+            timeSec: this.currentTimeSec,
+            type: 'facility_destroyed',
+            description: `UUV mine DESTROYED ${facility.name} port infrastructure`,
+            position: facility.position,
+          });
+        } else {
+          facility.status = 'damaged';
+          events.push({
+            timeSec: this.currentTimeSec,
+            type: 'facility_hit',
+            description: `UUV mine damaged ${facility.name} port (${facility.currentHitPoints}/${facility.hitPoints} HP)`,
+            position: facility.position,
+          });
+        }
       }
     }
   }

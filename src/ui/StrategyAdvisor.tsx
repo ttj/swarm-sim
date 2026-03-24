@@ -72,6 +72,7 @@ export default function StrategyAdvisor() {
   const [result, setResult] = useState<MCTSResult | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [iterations, setIterations] = useState(1000);
+  const [side, setSide] = useState<'blue' | 'red'>('blue');
 
   const runSearch = useCallback(async () => {
     const state = buildMCTSState();
@@ -79,7 +80,6 @@ export default function StrategyAdvisor() {
 
     setIsSearching(true);
 
-    // Run in Web Worker to avoid UI freeze
     activeWorker?.terminate();
     const worker = new MCTSWorkerModule();
     activeWorker = worker;
@@ -104,9 +104,10 @@ export default function StrategyAdvisor() {
       state,
       iterations,
       seed: Date.now() % 100000,
+      side,
     };
     worker.postMessage(request);
-  }, [iterations]);
+  }, [iterations, side]);
 
   const isNonObvious = result && result.bestMove.type !== 'no_op' &&
     result.moveScores.length > 1 &&
@@ -117,6 +118,13 @@ export default function StrategyAdvisor() {
       <h3>AI Strategy Advisor</h3>
 
       <div className="prob-controls">
+        <div className="control-group">
+          <label>Side</label>
+          <select value={side} onChange={(e) => setSide(e.target.value as 'blue' | 'red')}>
+            <option value="blue">Blue (defend)</option>
+            <option value="red">Red (attack)</option>
+          </select>
+        </div>
         <div className="control-group">
           <label>Depth</label>
           <select value={iterations} onChange={(e) => setIterations(Number(e.target.value))}>
@@ -131,7 +139,7 @@ export default function StrategyAdvisor() {
           onClick={runSearch}
           disabled={isSearching}
         >
-          {isSearching ? 'Thinking...' : 'Ask AI'}
+          {isSearching ? 'Thinking...' : side === 'blue' ? 'Advise Blue' : 'Advise Red'}
         </button>
       </div>
 

@@ -438,7 +438,7 @@ export function getScenarioPresets(facilities: Facility[]): Scenario[] {
         { id: 'w5', launchTimeMinutes: 150, droneSpec: 'shahed-136', count: 200, origin: FUJIAN_NORTH, target: 'tsmc-taichung', approachBearing: 90, formation: 'line' },
       ],
       seaLaunchedWaves: [],
-      uuvDeployment: { count: 0, mineTargets: [] },
+      uuvDeployment: { count: 6, mineTargets: ['tsmc-hsinchu', 'tsmc-kaohsiung'] },
       strategy: 'adaptive',
       totalBudgetUSD: 80_000_000,
       gpsJammingActive: true,

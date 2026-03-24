@@ -5,6 +5,7 @@ export interface MCTSWorkerRequest {
   state: MCTSState;
   iterations: number;
   seed: number;
+  side?: 'blue' | 'red';
 }
 
 export interface MCTSWorkerResponse {
@@ -13,7 +14,7 @@ export interface MCTSWorkerResponse {
 }
 
 self.onmessage = (e: MessageEvent<MCTSWorkerRequest>) => {
-  const { state, iterations, seed } = e.data;
-  const result = mctsSearch(state, iterations, seed);
+  const { state, iterations, seed, side } = e.data;
+  const result = mctsSearch(state, iterations, seed, side ?? 'blue');
   self.postMessage({ type: 'result', result } as MCTSWorkerResponse);
 };
