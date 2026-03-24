@@ -2,6 +2,7 @@ import type { DroneInstance, DroneSpec, DefenseAssetInstance, DefenseAssetSpec, 
 import { distanceKm } from '../utils/geo';
 import { RandomStream } from './RandomStream';
 import { CostTracker } from './CostTracker';
+import { SpatialGrid, kmToDeg } from './SpatialGrid';
 
 export interface CombatContext {
   gpsJammingActive: boolean;
@@ -52,6 +53,12 @@ export class CombatResolver {
     );
     if (attackDrones.length === 0) return events;
 
+    // Build spatial index for fast proximity queries (O(n) build, O(k) query)
+    const grid = new SpatialGrid();
+    for (let i = 0; i < attackDrones.length; i++) {
+      grid.insert(i, attackDrones[i].position[0], attackDrones[i].position[1]);
+    }
+
     // Process each defense asset
     for (const asset of defenseAssets) {
       if (!asset.isActive || asset.currentStock <= 0) continue;
@@ -59,10 +66,12 @@ export class CombatResolver {
       const spec = this.assetSpecs.get(asset.specId);
       if (!spec) continue;
 
-      // Find drones in range of this asset
-      const inRange = attackDrones.filter(
-        (d) => d.state === 'transit' && distanceKm(asset.position, d.position) <= spec.rangeKm
-      );
+      // Use spatial grid to find candidate drones, then exact distance check
+      const radiusDeg = kmToDeg(spec.rangeKm);
+      const candidateIndices = grid.queryRadius(asset.position[0], asset.position[1], radiusDeg);
+      const inRange = candidateIndices
+        .map((i) => attackDrones[i])
+        .filter((d) => d.state === 'transit' && distanceKm(asset.position, d.position) <= spec.rangeKm);
 
       if (inRange.length === 0) continue;
 

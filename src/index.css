@@ -937,6 +937,37 @@ html, body, #root {
   flex-shrink: 0;
 }
 
+.advisor-insights {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.advisor-insights h4 {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.insight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.insight-item .insight-badge {
+  flex-shrink: 0;
+  font-size: 7px;
+  padding: 1px 4px;
+  margin-top: 1px;
+}
+
 /* === Event Log === */
 .event-log {
   padding: 12px;

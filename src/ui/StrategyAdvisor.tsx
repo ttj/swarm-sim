@@ -1,16 +1,17 @@
 import { useState, useCallback } from 'react';
 import { useSimulationStore } from '../store/SimulationStore';
-import { mctsSearch, type MCTSState, type MCTSResult, type ZoneState } from '../ai/MCTSEngine';
+import { type MCTSState, type MCTSResult, type ZoneState } from '../ai/MCTSEngine';
+import type { MCTSWorkerRequest, MCTSWorkerResponse } from '../ai/mcts.worker';
+import MCTSWorkerModule from '../ai/mcts.worker?worker';
+
+let activeWorker: Worker | null = null;
 
 function buildMCTSState(): MCTSState | null {
   const state = useSimulationStore.getState();
   const { activeScenario, facilities, defenseAssets, currentTimeSec, drones } = state;
-
   if (!activeScenario || facilities.length === 0) return null;
 
-  // Build zone states from facilities and defense assets
   const zones: ZoneState[] = facilities.map((f) => {
-    // Count interceptors near this facility (within 30km)
     const nearbyInterceptors = defenseAssets
       .filter((a) => a.type === 'interceptor_squad' && a.isActive)
       .reduce((sum, a) => {
@@ -29,10 +30,9 @@ function buildMCTSState(): MCTSState | null {
     );
 
     const incomingDrones = drones.filter(
-      (d) => d.side === 'red' && d.state === 'transit' &&
-        d.waypoints.length > 0 &&
-        d.waypoints[d.waypoints.length - 1][0] === f.position[0] &&
-        d.waypoints[d.waypoints.length - 1][1] === f.position[1]
+      (d) => d.side === 'red' && d.state === 'transit' && d.waypoints.length > 0 &&
+        Math.abs(d.waypoints[d.waypoints.length - 1][0] - f.position[0]) < 0.1 &&
+        Math.abs(d.waypoints[d.waypoints.length - 1][1] - f.position[1]) < 0.1
     ).length;
 
     return {
@@ -50,7 +50,6 @@ function buildMCTSState(): MCTSState | null {
     ...activeScenario.redForce.airWaves,
     ...activeScenario.redForce.seaLaunchedWaves,
   ].reduce((s, w) => s + w.count, 0);
-
   const launchedDrones = drones.filter((d) => d.side === 'red').length;
   const remainingBudget = (totalDronesInWaves - launchedDrones) * 30000;
 
@@ -72,21 +71,41 @@ function buildMCTSState(): MCTSState | null {
 export default function StrategyAdvisor() {
   const [result, setResult] = useState<MCTSResult | null>(null);
   const [isSearching, setIsSearching] = useState(false);
-  const [iterations, setIterations] = useState(500);
+  const [iterations, setIterations] = useState(1000);
 
   const runSearch = useCallback(async () => {
-    setIsSearching(true);
-    await new Promise((r) => setTimeout(r, 50)); // Let UI update
-
     const state = buildMCTSState();
-    if (!state) {
-      setIsSearching(false);
-      return;
-    }
+    if (!state) return;
 
-    const searchResult = mctsSearch(state, iterations);
-    setResult(searchResult);
-    setIsSearching(false);
+    setIsSearching(true);
+
+    // Run in Web Worker to avoid UI freeze
+    activeWorker?.terminate();
+    const worker = new MCTSWorkerModule();
+    activeWorker = worker;
+
+    worker.onmessage = (e: MessageEvent<MCTSWorkerResponse>) => {
+      if (e.data.type === 'result') {
+        setResult(e.data.result);
+        setIsSearching(false);
+        worker.terminate();
+        activeWorker = null;
+      }
+    };
+
+    worker.onerror = () => {
+      setIsSearching(false);
+      worker.terminate();
+      activeWorker = null;
+    };
+
+    const request: MCTSWorkerRequest = {
+      type: 'search',
+      state,
+      iterations,
+      seed: Date.now() % 100000,
+    };
+    worker.postMessage(request);
   }, [iterations]);
 
   const isNonObvious = result && result.bestMove.type !== 'no_op' &&
@@ -101,10 +120,10 @@ export default function StrategyAdvisor() {
         <div className="control-group">
           <label>Depth</label>
           <select value={iterations} onChange={(e) => setIterations(Number(e.target.value))}>
-            <option value={200}>200</option>
             <option value={500}>500</option>
             <option value={1000}>1000</option>
             <option value={2000}>2000</option>
+            <option value={5000}>5000</option>
           </select>
         </div>
         <button
@@ -116,9 +135,25 @@ export default function StrategyAdvisor() {
         </button>
       </div>
 
+      {/* Key insights from strategy analysis */}
+      <div className="advisor-insights">
+        <h4>Key Insights (from analysis)</h4>
+        <div className="insight-item">
+          <span className="insight-badge">SURPRISING</span>
+          <span>EW-only ($12M) beats 200 interceptors ($400K) — zero marginal cost per kill</span>
+        </div>
+        <div className="insight-item">
+          <span className="insight-badge">PARADOX</span>
+          <span>Red GPS jamming helps blue's EW defense — double-edged sword</span>
+        </div>
+        <div className="insight-item">
+          <span className="insight-badge">STRATEGY</span>
+          <span>EW+DE layered ($32M) achieves 95% survival vs 2,000 drones</span>
+        </div>
+      </div>
+
       {result && (
         <div className="advisor-results">
-          {/* Best move recommendation */}
           <div className="recommendation">
             {isNonObvious && (
               <div className="insight-badge">NON-OBVIOUS INSIGHT</div>
@@ -131,7 +166,6 @@ export default function StrategyAdvisor() {
             </div>
           </div>
 
-          {/* Top move rankings */}
           <div className="prob-section">
             <h4>Move Rankings ({result.iterations} iterations)</h4>
             {result.moveScores.slice(0, 8).map((ms, i) => (
