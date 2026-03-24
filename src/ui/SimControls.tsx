@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { useSimulationStore } from '../store/SimulationStore';
 import { SPEED_PRESETS } from '../utils/constants';
+import { captureScreenshot, captureGif } from '../utils/capture';
 import type { MapStyle } from '../types';
 
 function formatTime(totalSeconds: number): string {
@@ -32,14 +34,30 @@ export default function SimControls() {
     activeScenario,
   } = useSimulationStore();
 
+  const [gifRecording, setGifRecording] = useState(false);
+  const [gifProgress, setGifProgress] = useState(0);
+
   const durationSec = (activeScenario?.durationHours ?? 24) * 3600;
   const progress = durationSec > 0 ? (currentTimeSec / durationSec) * 100 : 0;
 
   const handleReset = () => {
-    // Use the resetSim function attached by useSimulation hook
     const resetSim = (useSimulationStore as any)._resetSim;
-    if (resetSim) {
-      resetSim();
+    if (resetSim) resetSim();
+  };
+
+  const handleScreenshot = () => {
+    captureScreenshot();
+  };
+
+  const handleGif = async () => {
+    if (gifRecording) return;
+    setGifRecording(true);
+    setGifProgress(0);
+    try {
+      await captureGif(8000, 4, (pct) => setGifProgress(pct));
+    } finally {
+      setGifRecording(false);
+      setGifProgress(0);
     }
   };
 
@@ -93,6 +111,25 @@ export default function SimControls() {
               </option>
             ))}
           </select>
+        </div>
+
+        {/* Capture controls */}
+        <div className="control-group">
+          <button
+            className="control-btn capture-btn"
+            onClick={handleScreenshot}
+            title="Save screenshot (PNG)"
+          >
+            📷
+          </button>
+          <button
+            className={`control-btn capture-btn ${gifRecording ? 'recording' : ''}`}
+            onClick={handleGif}
+            title={gifRecording ? `Recording... ${Math.round(gifProgress * 100)}%` : 'Record GIF (8 sec)'}
+            disabled={gifRecording}
+          >
+            {gifRecording ? `⏺ ${Math.round(gifProgress * 100)}%` : '🎬'}
+          </button>
         </div>
 
         {/* Time display */}

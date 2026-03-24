@@ -128,6 +128,20 @@ html, body, #root {
   background: var(--accent-blue);
 }
 
+.capture-btn {
+  font-size: 13px !important;
+}
+
+.capture-btn.recording {
+  background: var(--danger) !important;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
 .time-display {
   background: var(--bg-dark);
   padding: 4px 12px;
