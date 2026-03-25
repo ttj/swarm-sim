@@ -26,11 +26,15 @@ const assetSpecs: DefenseAssetSpec[] = [
   { id: 'directed-energy-50kw', name: '50kW DE', type: 'directed_energy', rangeKm: 2, costPerUseUSD: 10, fixedCostUSD: 10000000, capacity: 9999, reloadTimeMinutes: 0.08, pkill: 0.8 },
   { id: 'decoy-emitter', name: 'Decoy', type: 'decoy_emitter', rangeKm: 5, costPerUseUSD: 0, fixedCostUSD: 3000, capacity: 9999, reloadTimeMinutes: 0, pkill: 0 },
   { id: 'net-launcher', name: 'Net', type: 'net_launcher', rangeKm: 2, costPerUseUSD: 500, fixedCostUSD: 5000, capacity: 3, reloadTimeMinutes: 15, pkill: 0.7 },
+  { id: 'hpm-leonidas', name: 'Leonidas HPM', type: 'hpm', rangeKm: 1, costPerUseUSD: 5, fixedCostUSD: 16500000, capacity: 9999, reloadTimeMinutes: 0.08, pkill: 0.95 },
+  { id: 'skyfall-interceptor', name: 'SkyFall', type: 'interceptor_squad', rangeKm: 15, costPerUseUSD: 1000, fixedCostUSD: 10000, capacity: 50, reloadTimeMinutes: 0, pkill: 0.65 },
 ];
 
-console.log('Running deep strategy analysis across 4 attack scenarios...\n');
+// Count available attack templates
+const attackCount = 7; // Original 4 + autonomous + fiber-optic + Jiutian
+console.log(`Running deep strategy analysis across ${attackCount} attack scenarios...\n`);
 
-for (let attackIdx = 0; attackIdx < 4; attackIdx++) {
+for (let attackIdx = 0; attackIdx < attackCount; attackIdx++) {
   const start = Date.now();
   const results = runStrategySearch(facilities, droneSpecs, assetSpecs, attackIdx, 20);
   const elapsed = ((Date.now() - start) / 1000).toFixed(1);
