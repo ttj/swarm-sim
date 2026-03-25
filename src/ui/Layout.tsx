@@ -7,11 +7,12 @@ import ProbabilityPanel from './ProbabilityPanel';
 import StrategyAdvisor from './StrategyAdvisor';
 import EventLog from './EventLog';
 import ComparePanel from './ComparePanel';
+import CampaignPanel from './CampaignPanel';
 import TimelineBar from './TimelineBar';
 import MapContainer from '../map/MapContainer';
 import { useUIStore } from '../store/UIStore';
 
-type SidebarTab = 'scenario' | 'assets' | 'events' | 'stats' | 'probability' | 'advisor' | 'compare';
+type SidebarTab = 'scenario' | 'assets' | 'events' | 'stats' | 'probability' | 'advisor' | 'compare' | 'campaign';
 
 export default function Layout() {
   const [activeTab, setActiveTab] = useState<SidebarTab>('scenario');
@@ -61,7 +62,8 @@ export default function Layout() {
                 { id: 'events', label: 'Events' },
                 { id: 'stats', label: 'Stats' },
                 { id: 'probability', label: 'Prob' },
-                { id: 'compare', label: 'Compare' },
+                { id: 'compare', label: 'Cmp' },
+                { id: 'campaign', label: 'Camp' },
                 { id: 'advisor', label: 'AI' },
               ].map((tab) => (
                 <button
@@ -81,6 +83,7 @@ export default function Layout() {
               {activeTab === 'stats' && <StatsPanel />}
               {activeTab === 'probability' && <ProbabilityPanel />}
               {activeTab === 'compare' && <ComparePanel />}
+              {activeTab === 'campaign' && <CampaignPanel />}
               {activeTab === 'advisor' && <StrategyAdvisor />}
             </div>
           </aside>
