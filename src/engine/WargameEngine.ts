@@ -50,10 +50,8 @@ export interface WargameState {
 
 // Detection ranges for blue sensors
 const BLUE_RADAR_RANGE_KM = 80;
-const BLUE_EW_DETECT_RANGE_KM = 20; // EW jammers also detect within their range
-
-// Red intelligence (knows facility locations, can see own forces)
-const RED_INTEL_RANGE_KM = 0; // Red can't see blue defenses (fog of war)
+// Future: EW jammers also detect within their range
+// Future: Red reconnaissance drones could reveal blue positions
 
 /**
  * Filter drones to only those detectable by blue's sensors.
@@ -86,7 +84,7 @@ function filterForBlue(
  * Filter defenses visible to red (fog of war — red has limited intel).
  */
 function filterForRed(
-  defenseAssets: DefenseAssetInstance[],
+  _defenseAssets: DefenseAssetInstance[],
 ): DefenseAssetInstance[] {
   // Red can only see defenses that have engaged (revealed by firing)
   // For simplicity: red sees nothing until defenses fire
