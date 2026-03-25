@@ -257,17 +257,18 @@ export class CombatResolver {
   private getEngagementsPerTick(spec: DefenseAssetSpec, currentStock?: number): number {
     switch (spec.type) {
       case 'directed_energy':
-        return 2; // ~5s per engagement
+        return 2; // ~5s per engagement, rate-limited by tracking
       case 'ew_jammer':
-        return 10; // Affects many simultaneously within range
+        return 5; // Area effect but diminishing returns at high density
       case 'interceptor_squad':
-        // A squad launches interceptors in parallel — scales with stock
-        // Each tick, up to 20% of remaining stock can engage (launch rate)
-        return Math.max(1, Math.floor((currentStock ?? spec.capacity) * 0.2));
+        // Each interceptor drone takes ~30s to launch, acquire, and engage
+        // So per 10-second tick, ~3% of stock can launch new engagements
+        // A squad of 100 processes ~3 per tick; needs multiple ticks to clear a wave
+        return Math.max(1, Math.ceil((currentStock ?? spec.capacity) * 0.03));
       case 'net_launcher':
         return 1;
       case 'decoy_emitter':
-        return 5; // Diverts multiple
+        return 3; // Diverts a few per tick
       case 'patriot_battery':
         return 1;
       default:
