@@ -103,6 +103,53 @@ function generateDefenseBlocks(): DefenseBlock[] {
       tags: ['ew', 'spread', 'blanket'],
     },
 
+    // === HPM (defeats ALL drone types including fiber-optic/autonomous) ===
+    {
+      id: 'hpm-hsinchu', name: 'HPM at Hsinchu',
+      assets: [makeAsset('hpm-leonidas', 'hpm', P.hsinchu_close, 9999)],
+      totalCostUSD: 16_500_000, description: 'Leonidas HPM at Hsinchu (1km range, defeats all types)',
+      tags: ['hpm', 'hsinchu', 'area-denial'],
+    },
+    {
+      id: 'hpm-top2', name: 'HPM at Hsinchu + Tainan',
+      assets: [
+        makeAsset('hpm-leonidas', 'hpm', P.hsinchu_close, 9999),
+        makeAsset('hpm-leonidas', 'hpm', P.tainan_close, 9999),
+      ],
+      totalCostUSD: 33_000_000, description: 'HPM at top-2 value facilities',
+      tags: ['hpm', 'top2', 'area-denial'],
+    },
+    {
+      id: 'hpm-all4', name: 'HPM at all 4 major sites',
+      assets: [
+        makeAsset('hpm-leonidas', 'hpm', P.hsinchu_close, 9999),
+        makeAsset('hpm-leonidas', 'hpm', P.tainan_close, 9999),
+        makeAsset('hpm-leonidas', 'hpm', [120.64, 24.255], 9999),
+        makeAsset('hpm-leonidas', 'hpm', [120.30, 22.719], 9999),
+      ],
+      totalCostUSD: 66_000_000, description: 'HPM coverage at all major facilities',
+      tags: ['hpm', 'all', 'area-denial'],
+    },
+
+    // === SKYFALL INTERCEPTORS (cheap, Ukraine-proven) ===
+    {
+      id: 'skyfall-hsinchu-100', name: '100 SkyFall interceptors at Hsinchu',
+      assets: [makeAsset('skyfall-interceptor', 'interceptor_squad', P.hsinchu_w, 100)],
+      totalCostUSD: 110_000, description: '$1K kamikaze interceptors, Ukraine-proven',
+      tags: ['skyfall', 'cheap', 'hsinchu'],
+    },
+    {
+      id: 'skyfall-spread-200', name: '200 SkyFall spread all sites',
+      assets: [
+        makeAsset('skyfall-interceptor', 'interceptor_squad', P.hsinchu_w, 50),
+        makeAsset('skyfall-interceptor', 'interceptor_squad', P.tainan_w, 50),
+        makeAsset('skyfall-interceptor', 'interceptor_squad', P.kaohsiung_w, 50),
+        makeAsset('skyfall-interceptor', 'interceptor_squad', P.taichung_w, 50),
+      ],
+      totalCostUSD: 210_000, description: '$1K interceptors spread across all sites',
+      tags: ['skyfall', 'cheap', 'spread'],
+    },
+
     // === DECOYS (very cheap, divert GPS drones) ===
     {
       id: 'decoys-offshore-2', name: '2 decoy emitters offshore',
@@ -248,6 +295,22 @@ function generateStrategies(): StrategyConfig[] {
 
     // Nets + decoys (cheapest possible active defense)
     ['Nets + decoys + 50 interceptors ($124K)', ['nets-hsinchu-3', 'decoys-offshore-2', 'int-cheap-hsinchu-50']],
+
+    // === HPM COMBOS (defeats autonomous/fiber-optic drones) ===
+    ['HPM Hsinchu only ($16.5M)', ['hpm-hsinchu']],
+    ['HPM top 2 ($33M)', ['hpm-top2']],
+    ['HPM all 4 ($66M)', ['hpm-all4']],
+    ['HPM + EW at Hsinchu (hybrid)', ['hpm-hsinchu', 'ew-hsinchu']],
+    ['HPM + EW blanket (full soft-kill)', ['hpm-top2', 'ew-all4']],
+    ['HPM + SkyFall interceptors ($17M)', ['hpm-hsinchu', 'skyfall-hsinchu-100']],
+    ['HPM + decoy funnel ($16.5M)', ['hpm-hsinchu', 'decoys-ring-6']],
+    ['HPM all + SkyFall spread ($66M)', ['hpm-all4', 'skyfall-spread-200']],
+    ['LAYERED: EW + HPM + SkyFall ($79M)', ['ew-all4', 'hpm-top2', 'skyfall-spread-200']],
+
+    // === SKYFALL CHEAP COMBOS ===
+    ['SkyFall 200 spread only ($210K)', ['skyfall-spread-200']],
+    ['SkyFall + EW all ($12.2M)', ['skyfall-spread-200', 'ew-all4']],
+    ['SkyFall + decoys ($228K)', ['skyfall-spread-200', 'decoys-ring-6']],
   ];
 
   const blockMap = new Map(blocks.map((b) => [b.id, b]));
@@ -384,6 +447,48 @@ function buildAttackTemplates(facilities: Facility[]): Scenario[] {
           { id: 'w3', launchTimeMinutes: 30, droneSpec: 'shahed-136', count: 500, origin: [119.3, 24.5] as [number, number], target: 'tsmc-hsinchu-hq', approachBearing: 80, formation: 'concentrated' },
           { id: 'w4', launchTimeMinutes: 50, droneSpec: 'shahed-136', count: 300, origin: [119.2, 22.8] as [number, number], target: 'tsmc-kaohsiung', approachBearing: 95, formation: 'dispersed' },
           { id: 'w5', launchTimeMinutes: 70, droneSpec: 'shahed-136', count: 300, origin: [119.0, 24.0] as [number, number], target: 'tsmc-taichung', approachBearing: 90, formation: 'line' },
+        ],
+      },
+    },
+    // Attack E: 500 Autonomous drones (EW-immune)
+    {
+      ...base, id: 'attack-500-autonomous', name: '500 Autonomous drones (EW-immune)',
+      description: '', durationHours: 4,
+      redForce: {
+        ...redBase, strategy: 'saturation_rush' as const,
+        totalBudgetUSD: 37_500_000, gpsJammingActive: true, ewCapability: 'advanced' as const,
+        airWaves: [
+          { id: 'w1', launchTimeMinutes: 5, droneSpec: 'autonomous-strike', count: 300, origin: [119.3, 24.5] as [number, number], target: 'tsmc-hsinchu-hq', approachBearing: 90, formation: 'dispersed' },
+          { id: 'w2', launchTimeMinutes: 15, droneSpec: 'autonomous-strike', count: 200, origin: [119.0, 23.5] as [number, number], target: 'tsmc-tainan-fab18', approachBearing: 110, formation: 'concentrated' },
+        ],
+      },
+    },
+    // Attack F: 300 Fiber-optic drones (EW+GPS immune, cheap)
+    {
+      ...base, id: 'attack-300-fiber', name: '300 Fiber-optic drones (EW-immune)',
+      description: '', durationHours: 4,
+      redForce: {
+        ...redBase, strategy: 'saturation_rush' as const,
+        totalBudgetUSD: 2_400_000, gpsJammingActive: true, ewCapability: 'advanced' as const,
+        airWaves: [
+          { id: 'w1', launchTimeMinutes: 5, droneSpec: 'fiber-optic-drone', count: 200, origin: [120.2, 24.6] as [number, number], target: 'tsmc-hsinchu-hq', approachBearing: 85, formation: 'dispersed' },
+          { id: 'w2', launchTimeMinutes: 10, droneSpec: 'fiber-optic-drone', count: 100, origin: [119.9, 23.3] as [number, number], target: 'tsmc-tainan-fab18', approachBearing: 100, formation: 'dispersed' },
+        ],
+      },
+    },
+    // Attack G: Jiutian mothership swarm (100 autonomous per mothership)
+    {
+      ...base, id: 'attack-jiutian-500', name: '5 Jiutian motherships (500 autonomous)',
+      description: '', durationHours: 4,
+      redForce: {
+        ...redBase, strategy: 'multi_axis_sea' as const,
+        totalBudgetUSD: 2_500_000, gpsJammingActive: true, ewCapability: 'advanced' as const,
+        airWaves: [
+          { id: 'jt1', launchTimeMinutes: 5, droneSpec: 'jiutian-swarm-drone', count: 100, origin: [119.5, 24.8] as [number, number], target: 'tsmc-hsinchu-hq', approachBearing: 85, formation: 'concentrated' },
+          { id: 'jt2', launchTimeMinutes: 8, droneSpec: 'jiutian-swarm-drone', count: 100, origin: [119.3, 24.3] as [number, number], target: 'tsmc-taichung', approachBearing: 90, formation: 'concentrated' },
+          { id: 'jt3', launchTimeMinutes: 12, droneSpec: 'jiutian-swarm-drone', count: 100, origin: [119.0, 23.3] as [number, number], target: 'tsmc-tainan-fab18', approachBearing: 100, formation: 'concentrated' },
+          { id: 'jt4', launchTimeMinutes: 15, droneSpec: 'jiutian-swarm-drone', count: 100, origin: [119.1, 22.8] as [number, number], target: 'tsmc-kaohsiung', approachBearing: 95, formation: 'concentrated' },
+          { id: 'jt5', launchTimeMinutes: 25, droneSpec: 'jiutian-swarm-drone', count: 100, origin: [119.4, 24.6] as [number, number], target: 'tsmc-hsinchu-hq', approachBearing: 80, formation: 'concentrated' },
         ],
       },
     },

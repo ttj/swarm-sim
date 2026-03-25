@@ -587,10 +587,149 @@ export function getScenarioPresets(facilities: Facility[]): Scenario[] {
     environment: baseEnvironment(),
   };
 
+  // ============================================================
+  // CALIBRATION SCENARIOS (based on real events)
+  // ============================================================
+
+  // Calibration: Iran-UAE 2026 (target: 93-97% intercept)
+  const calIranUAE: Scenario = {
+    id: 'cal-iran-uae-2026',
+    name: '[CAL] Iran→UAE 2026 (2,000 drones)',
+    description: 'Calibration: Feb-Mar 2026 Iran drone campaign against UAE. 2,000+ Shaheds in first wave. Real intercept rate: 93-97% with Patriot/NASAMS + allied support.',
+    durationHours: 12,
+    redForce: {
+      conventionalStrikes: [],
+      vessels: [],
+      quarantineFormation: 'arc',
+      airWaves: [
+        { id: 'w1', launchTimeMinutes: 5, droneSpec: 'shahed-136', count: 800, origin: [119.3, 24.5], target: 'tsmc-hsinchu-hq', approachBearing: 90, formation: 'dispersed' },
+        { id: 'w2', launchTimeMinutes: 20, droneSpec: 'shahed-136', count: 600, origin: [119.0, 23.5], target: 'tsmc-tainan-fab18', approachBearing: 105, formation: 'dispersed' },
+        { id: 'w3', launchTimeMinutes: 45, droneSpec: 'shahed-136', count: 600, origin: [119.2, 22.8], target: 'tsmc-kaohsiung', approachBearing: 95, formation: 'concentrated' },
+      ],
+      seaLaunchedWaves: [],
+      uuvDeployment: { count: 0, mineTargets: [] },
+      strategy: 'saturation_rush',
+      totalBudgetUSD: 60_000_000,
+      gpsJammingActive: false,
+      ewCapability: 'none',
+    },
+    blueForce: {
+      assets: [
+        // Patriot batteries (expensive, high pkill)
+        makeAsset('patriot-pac3', 'patriot_battery', POS_HSINCHU_WEST, 32),
+        makeAsset('patriot-pac3', 'patriot_battery', POS_TAINAN_WEST, 16),
+        makeAsset('patriot-pac3', 'patriot_battery', POS_KAOHSIUNG_WEST, 16),
+        // EW jammers
+        makeAsset('ew-jammer', 'ew_jammer', POS_HSINCHU_NORTH, 9999),
+        makeAsset('ew-jammer', 'ew_jammer', POS_TAINAN_NORTH, 9999),
+        // Interceptor drones
+        makeAsset('interceptor-cheap', 'interceptor_squad', POS_HSINCHU_WEST, 200),
+        makeAsset('interceptor-cheap', 'interceptor_squad', POS_TAINAN_WEST, 150),
+        makeAsset('interceptor-cheap', 'interceptor_squad', POS_KAOHSIUNG_WEST, 100),
+      ],
+      totalBudgetUSD: 2_000_000_000,
+      alliedSupport: { enabled: true, carrierStrikeGroup: true, submarineSupport: false, ewSupport: true },
+      c2Resilience: 'mesh',
+      productionRate: 100,
+    },
+    facilities: facilityClones(),
+    environment: baseEnvironment(),
+  };
+
+  // Calibration: Jiutian mothership swarm attack
+  const calJiutian: Scenario = {
+    id: 'cal-jiutian-swarm',
+    name: '[NEW] Jiutian Mothership Swarm (500 drones)',
+    description: '5 Jiutian motherships each deploy 100 autonomous swarm drones from 15km altitude. EW-resistant, GPS-independent. Tests HPM vs conventional defense.',
+    durationHours: 4,
+    redForce: {
+      conventionalStrikes: [],
+      vessels: [],
+      quarantineFormation: 'arc',
+      airWaves: [
+        // 5 mothership deployments, staggered — autonomous drones
+        { id: 'jt1', launchTimeMinutes: 5, droneSpec: 'jiutian-swarm-drone', count: 100, origin: [119.5, 24.8], target: 'tsmc-hsinchu-hq', approachBearing: 85, formation: 'concentrated' },
+        { id: 'jt2', launchTimeMinutes: 8, droneSpec: 'jiutian-swarm-drone', count: 100, origin: [119.3, 24.3], target: 'tsmc-taichung', approachBearing: 90, formation: 'concentrated' },
+        { id: 'jt3', launchTimeMinutes: 12, droneSpec: 'jiutian-swarm-drone', count: 100, origin: [119.0, 23.3], target: 'tsmc-tainan-fab18', approachBearing: 100, formation: 'concentrated' },
+        { id: 'jt4', launchTimeMinutes: 15, droneSpec: 'jiutian-swarm-drone', count: 100, origin: [119.1, 22.8], target: 'tsmc-kaohsiung', approachBearing: 95, formation: 'concentrated' },
+        { id: 'jt5', launchTimeMinutes: 25, droneSpec: 'jiutian-swarm-drone', count: 100, origin: [119.4, 24.6], target: 'tsmc-hsinchu-hq', approachBearing: 80, formation: 'concentrated' },
+      ],
+      seaLaunchedWaves: [],
+      uuvDeployment: { count: 0, mineTargets: [] },
+      strategy: 'multi_axis_sea',
+      totalBudgetUSD: 2_500_000,
+      gpsJammingActive: true,
+      ewCapability: 'advanced',
+    },
+    blueForce: {
+      assets: [
+        // HPM at top facilities — the key test
+        makeAsset('hpm-leonidas', 'hpm', [120.97, 24.80], 9999),
+        makeAsset('hpm-leonidas', 'hpm', [120.25, 23.08], 9999),
+        // EW (ineffective vs autonomous drones — deliberately included to show)
+        makeAsset('ew-jammer', 'ew_jammer', POS_HSINCHU_WEST, 9999),
+        makeAsset('ew-jammer', 'ew_jammer', POS_TAINAN_WEST, 9999),
+        // Cheap interceptors as backup
+        makeAsset('interceptor-autonav', 'interceptor_squad', POS_HSINCHU_NORTH, 100),
+        makeAsset('interceptor-autonav', 'interceptor_squad', POS_TAINAN_NORTH, 80),
+      ],
+      totalBudgetUSD: 40_000_000,
+      alliedSupport: { enabled: false, carrierStrikeGroup: false, submarineSupport: false, ewSupport: false },
+      c2Resilience: 'distributed',
+      productionRate: 0,
+    },
+    facilities: facilityClones(),
+    environment: baseEnvironment(),
+  };
+
+  // Fiber-optic drone attack (EW-immune, tests HPM necessity)
+  const calFiberOptic: Scenario = {
+    id: 'cal-fiber-optic',
+    name: '[NEW] Fiber-Optic Drone Attack (300)',
+    description: '300 fiber-optic guided drones: immune to EW/GPS jamming, only HPM and kinetic can stop them. Cheap ($8K each) but short-range — launched from quarantine vessels.',
+    durationHours: 4,
+    redForce: {
+      conventionalStrikes: [],
+      vessels: [
+        { id: 'fo-fleet', vesselSpec: 'fishing-militia', count: 100, origin: [119.5, 24.5], stationPosition: [120.2, 24.5], arrivalTimeMinutes: 5 },
+      ],
+      quarantineFormation: 'arc',
+      airWaves: [
+        { id: 'fo1', launchTimeMinutes: 10, droneSpec: 'fiber-optic-drone', count: 150, origin: [120.2, 24.6], target: 'tsmc-hsinchu-hq', approachBearing: 85, formation: 'dispersed' },
+        { id: 'fo2', launchTimeMinutes: 15, droneSpec: 'fiber-optic-drone', count: 150, origin: [119.9, 23.3], target: 'tsmc-tainan-fab18', approachBearing: 100, formation: 'dispersed' },
+      ],
+      seaLaunchedWaves: [],
+      uuvDeployment: { count: 0, mineTargets: [] },
+      strategy: 'saturation_rush',
+      totalBudgetUSD: 2_400_000,
+      gpsJammingActive: true,
+      ewCapability: 'advanced',
+    },
+    blueForce: {
+      assets: [
+        // HPM — the only soft-kill that works against fiber-optic
+        makeAsset('hpm-leonidas', 'hpm', [120.97, 24.80], 9999),
+        // EW (included but WILL NOT WORK vs fiber-optic — demonstrates the gap)
+        makeAsset('ew-jammer', 'ew_jammer', POS_HSINCHU_WEST, 9999),
+        // Kinetic backup
+        makeAsset('skyfall-interceptor', 'interceptor_squad', POS_HSINCHU_NORTH, 100),
+        makeAsset('skyfall-interceptor', 'interceptor_squad', POS_TAINAN_NORTH, 80),
+      ],
+      totalBudgetUSD: 20_000_000,
+      alliedSupport: { enabled: false, carrierStrikeGroup: false, submarineSupport: false, ewSupport: false },
+      c2Resilience: 'distributed',
+      productionRate: 0,
+    },
+    facilities: facilityClones(),
+    environment: baseEnvironment(),
+  };
+
   return [
     scenario1, scenario2, scenario3, scenario4, scenario5, scenario6,
-    // AI-discovered strategies (marked with [AI] prefix)
+    // AI-discovered strategies
     discovery1, discovery2, discovery3, discovery4, discovery5,
+    // Calibration & new threat scenarios
+    calIranUAE, calJiutian, calFiberOptic,
   ];
 }
 

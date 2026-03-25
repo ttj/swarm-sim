@@ -37,6 +37,7 @@ const RANGE_COLORS: Record<string, [number, number, number, number]> = {
   decoy_emitter: [255, 170, 51, 15],
   anti_ship_battery: [255, 68, 68, 10],
   patriot_battery: [200, 200, 200, 8],
+  hpm: [255, 0, 255, 35],
 };
 
 const RANGE_BORDER_COLORS: Record<string, [number, number, number, number]> = {
@@ -47,6 +48,7 @@ const RANGE_BORDER_COLORS: Record<string, [number, number, number, number]> = {
   decoy_emitter: [255, 170, 51, 50],
   anti_ship_battery: [255, 68, 68, 40],
   patriot_battery: [200, 200, 200, 30],
+  hpm: [255, 0, 255, 120],
 };
 
 // Look up range for an asset
@@ -261,6 +263,7 @@ export default function MapContainer() {
           decoy_emitter: '#ffaa33',
           anti_ship_battery: '#ff4444',
           patriot_battery: '#ffffff',
+          hpm: '#ff00ff',
         };
         const color = typeColors[asset.type] ?? '#4a9eff';
         el.style.cssText = `

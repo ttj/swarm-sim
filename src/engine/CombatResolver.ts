@@ -75,6 +75,35 @@ export class CombatResolver {
 
       if (inRange.length === 0) continue;
 
+      // === HPM SPECIAL CASE: area-denial, single pulse defeats all in range ===
+      // HPM works against ALL drone types including fiber-optic and autonomous
+      if (spec.type === 'hpm') {
+        // HPM fires once per cooldown (~5s), hits everything in range
+        let hpmKills = 0;
+        for (const target of inRange) {
+          if (target.state !== 'transit') continue;
+          // HPM has very high pkill regardless of drone guidance type
+          const rangeFraction = distanceKm(asset.position, target.position) / spec.rangeKm;
+          const rangeMod = rangeFraction < 0.5 ? 1.0 : 1.0 - (rangeFraction - 0.5) * 0.3;
+          if (this.rng.chance(spec.pkill * rangeMod)) {
+            target.state = 'destroyed';
+            this.costTracker.addDroneDestroyed('red');
+            hpmKills++;
+          }
+        }
+        if (hpmKills > 0) {
+          events.push({
+            timeSec: context.currentTimeSec,
+            type: 'intercept',
+            description: `${spec.name} pulse destroyed ${hpmKills} drones`,
+            position: asset.position,
+            involvedIds: [asset.instanceId],
+          });
+          this.costTracker.addCost('blue', spec.costPerUseUSD);
+        }
+        continue; // Skip normal engagement loop for HPM
+      }
+
       // Calculate saturation modifier
       const saturationMod = Math.min(1.0, asset.currentStock / inRange.length);
 
@@ -140,6 +169,8 @@ export class CombatResolver {
    */
   private canEngage(asset: DefenseAssetSpec, drone: DroneSpec): boolean {
     switch (asset.type) {
+      case 'hpm':
+        return true; // HPM defeats all drone types (handled in special case above)
       case 'ew_jammer':
         return drone.vulnerabilities.ewJammable;
       case 'patriot_battery':

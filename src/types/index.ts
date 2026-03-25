@@ -82,7 +82,8 @@ export type DefenseAssetType =
   | 'net_launcher'
   | 'decoy_emitter'
   | 'anti_ship_battery'
-  | 'patriot_battery';
+  | 'patriot_battery'
+  | 'hpm';
 
 export interface DefenseAssetSpec {
   id: string;

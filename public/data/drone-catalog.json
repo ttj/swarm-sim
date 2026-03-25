@@ -73,6 +73,42 @@
       }
     },
     {
+      "id": "fiber-optic-drone",
+      "name": "Fiber-Optic Guided Drone",
+      "side": "red",
+      "domain": "air",
+      "speedKmh": 130,
+      "cruiseSpeedKmh": 110,
+      "maxRangeKm": 20,
+      "enduranceMinutes": 30,
+      "costUSD": 8000,
+      "payloadKg": 3,
+      "guidance": "fiber_optic",
+      "vulnerabilities": {
+        "ewJammable": false,
+        "radarCrossSection": "low",
+        "irSignature": "low"
+      }
+    },
+    {
+      "id": "jiutian-swarm-drone",
+      "name": "Jiutian Swarm Drone (Sub-munition)",
+      "side": "red",
+      "domain": "air",
+      "speedKmh": 200,
+      "cruiseSpeedKmh": 160,
+      "maxRangeKm": 50,
+      "enduranceMinutes": 30,
+      "costUSD": 5000,
+      "payloadKg": 2,
+      "guidance": "autonomous_vision",
+      "vulnerabilities": {
+        "ewJammable": false,
+        "radarCrossSection": "low",
+        "irSignature": "low"
+      }
+    },
+    {
       "id": "cruise-missile-yj62",
       "name": "YJ-62 Cruise Missile",
       "side": "red",
@@ -184,6 +220,28 @@
       "capacity": 9999,
       "reloadTimeMinutes": 0,
       "pkill": 0
+    },
+    {
+      "id": "hpm-leonidas",
+      "name": "Leonidas HPM (High-Power Microwave)",
+      "type": "hpm",
+      "rangeKm": 1,
+      "costPerUseUSD": 5,
+      "fixedCostUSD": 16500000,
+      "capacity": 9999,
+      "reloadTimeMinutes": 0.08,
+      "pkill": 0.95
+    },
+    {
+      "id": "skyfall-interceptor",
+      "name": "SkyFall P1-SUN Interceptor",
+      "type": "interceptor_squad",
+      "rangeKm": 15,
+      "costPerUseUSD": 1000,
+      "fixedCostUSD": 10000,
+      "capacity": 50,
+      "reloadTimeMinutes": 0,
+      "pkill": 0.65
     },
     {
       "id": "patriot-pac3",
