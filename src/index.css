@@ -49,6 +49,50 @@ html, body, #root {
   gap: 8px;
 }
 
+/* === Wargame Panel === */
+.wargame-panel {
+  padding: 12px;
+}
+
+.wargame-panel h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-blue);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.wg-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 6px 8px;
+  background: var(--bg-dark);
+  border-radius: 4px;
+}
+
+.wg-phase {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.wg-phase.blue_plan { color: var(--accent-blue); }
+.wg-phase.red_plan { color: var(--danger); }
+.wg-phase.resolve { color: var(--warn); }
+.wg-phase.review { color: var(--text-primary); }
+
+.wg-score {
+  font-size: 11px;
+  font-family: 'Consolas', monospace;
+  color: var(--text-secondary);
+}
+
+.wg-phase-content {
+  margin-top: 8px;
+}
+
 .ais-active {
   background: var(--ok) !important;
   color: #fff !important;
