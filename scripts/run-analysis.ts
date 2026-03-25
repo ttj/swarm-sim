@@ -9,7 +9,7 @@ import type { Facility, DroneSpec, DefenseAssetSpec } from '../src/types';
 const facilities: Facility[] = [
   { id: 'tsmc-hsinchu', name: 'TSMC Hsinchu', position: [120.99, 24.80], radiusKm: 2.5, value: 100, hitPoints: 5, currentHitPoints: 5, status: 'operational' },
   { id: 'tsmc-taichung', name: 'TSMC Taichung', position: [120.68, 24.14], radiusKm: 1.5, value: 60, hitPoints: 4, currentHitPoints: 4, status: 'operational' },
-  { id: 'tsmc-tainan', name: 'TSMC Tainan', position: [120.27, 23.08], radiusKm: 2.0, value: 90, hitPoints: 5, currentHitPoints: 5, status: 'operational' },
+  { id: 'tsmc-tainan-fab18', name: 'TSMC Tainan', position: [120.27, 23.08], radiusKm: 2.0, value: 90, hitPoints: 5, currentHitPoints: 5, status: 'operational' },
   { id: 'tsmc-kaohsiung', name: 'TSMC Kaohsiung', position: [120.30, 22.63], radiusKm: 1.5, value: 80, hitPoints: 4, currentHitPoints: 4, status: 'operational' },
 ];
 
@@ -18,6 +18,9 @@ const droneSpecs: DroneSpec[] = [
   { id: 'fpv-kamikaze', name: 'FPV', side: 'red', domain: 'air', speedKmh: 150, cruiseSpeedKmh: 120, maxRangeKm: 15, enduranceMinutes: 25, costUSD: 1500, payloadKg: 2, guidance: 'rf_command', vulnerabilities: { ewJammable: true, radarCrossSection: 'low', irSignature: 'low' } },
   { id: 'interceptor-cheap', name: 'Interceptor', side: 'blue', domain: 'air', speedKmh: 200, cruiseSpeedKmh: 160, maxRangeKm: 20, enduranceMinutes: 30, costUSD: 2000, payloadKg: 1, guidance: 'gps', vulnerabilities: { ewJammable: true, radarCrossSection: 'low', irSignature: 'low' } },
   { id: 'interceptor-autonav', name: 'Auto-Nav', side: 'blue', domain: 'air', speedKmh: 200, cruiseSpeedKmh: 160, maxRangeKm: 20, enduranceMinutes: 40, costUSD: 15000, payloadKg: 1, guidance: 'autonomous_vision', vulnerabilities: { ewJammable: false, radarCrossSection: 'low', irSignature: 'low' } },
+  { id: 'autonomous-strike', name: 'Autonomous Strike', side: 'red', domain: 'air', speedKmh: 150, cruiseSpeedKmh: 130, maxRangeKm: 500, enduranceMinutes: 240, costUSD: 75000, payloadKg: 30, guidance: 'autonomous_vision', vulnerabilities: { ewJammable: false, radarCrossSection: 'low', irSignature: 'low' } },
+  { id: 'fiber-optic-drone', name: 'Fiber-Optic Drone', side: 'red', domain: 'air', speedKmh: 130, cruiseSpeedKmh: 110, maxRangeKm: 20, enduranceMinutes: 30, costUSD: 8000, payloadKg: 3, guidance: 'fiber_optic', vulnerabilities: { ewJammable: false, radarCrossSection: 'low', irSignature: 'low' } },
+  { id: 'jiutian-swarm-drone', name: 'Jiutian Sub-munition', side: 'red', domain: 'air', speedKmh: 200, cruiseSpeedKmh: 160, maxRangeKm: 50, enduranceMinutes: 30, costUSD: 5000, payloadKg: 2, guidance: 'autonomous_vision', vulnerabilities: { ewJammable: false, radarCrossSection: 'low', irSignature: 'low' } },
 ];
 
 const assetSpecs: DefenseAssetSpec[] = [
