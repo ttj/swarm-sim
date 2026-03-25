@@ -8,6 +8,7 @@ import { useUIStore } from '../store/UIStore';
 import { ASSET_TEMPLATES } from '../ui/AssetPalette';
 import { MAP_CENTER, MAP_DEFAULT_ZOOM, MAPLIBRE_STYLES, MAPBOX_STYLES, COLORS } from '../utils/constants';
 import { circlePoints } from '../utils/geo';
+import { startAIS } from '../data/AISClient';
 import type { MapStyle, DroneInstance, DefenseAssetInstance, Facility } from '../types';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
@@ -133,6 +134,19 @@ export default function MapContainer() {
   const isRunning = useSimulationStore((s) => s.isRunning);
 
   const placementMode = useUIStore((s) => s.placementMode);
+  const aisEnabled = useUIStore((s) => s.aisEnabled);
+  const aisVessels = useUIStore((s) => s.aisVessels);
+
+  // AIS data subscription
+  useEffect(() => {
+    if (!aisEnabled) return;
+    const unsub = startAIS((vessels) => {
+      useUIStore.getState().setAisVessels(
+        vessels.map((v) => ({ lat: v.lat, lon: v.lon, shipType: v.shipType }))
+      );
+    });
+    return unsub;
+  }, [aisEnabled]);
 
   // Track engagement flashes
   useEffect(() => {
@@ -414,6 +428,25 @@ export default function MapContainer() {
       }
     }
 
+    // === AIS REAL SHIP POSITIONS ===
+    if (aisEnabled && aisVessels.length > 0) {
+      layers.push(
+        new ScatterplotLayer({
+          id: 'ais-vessels',
+          data: aisVessels,
+          getPosition: (d: any) => [d.lon, d.lat],
+          getRadius: 600,
+          getFillColor: (d: any) =>
+            d.shipType === 30 ? [100, 200, 100, 120] :  // Fishing = green
+            d.shipType === 70 ? [150, 150, 200, 100] :  // Cargo = blue-grey
+            d.shipType === 80 ? [200, 150, 100, 100] :  // Tanker = amber
+            [150, 150, 150, 80],                          // Other = grey
+          radiusMinPixels: 1,
+          radiusMaxPixels: 4,
+        })
+      );
+    }
+
     // === RED DRONES ===
     const activeRedDrones = drones.filter((d) => d.side === 'red' && d.state === 'transit');
     const destroyedRedDrones = drones.filter(
@@ -488,7 +521,7 @@ export default function MapContainer() {
     }
 
     deckOverlayRef.current.setProps({ layers });
-  }, [drones, defenseAssets, facilities, events, vessels]);
+  }, [drones, defenseAssets, facilities, events, vessels, aisEnabled, aisVessels]);
 
   return (
     <div

@@ -43,6 +43,16 @@ export default function Layout() {
         <div className="toolbar-right">
           <SimControls />
           <button
+            className={`control-btn ${useUIStore.getState().aisEnabled ? 'ais-active' : ''}`}
+            onClick={() => {
+              const s = useUIStore.getState();
+              s.setAisEnabled(!s.aisEnabled);
+            }}
+            title="Toggle AIS ship tracking overlay"
+          >
+            🚢
+          </button>
+          <button
             className="control-btn presentation-btn"
             onClick={() => setPresentationMode(!presentationMode)}
             title={presentationMode ? 'Exit fullscreen (Esc)' : 'Presentation mode (Ctrl+F)'}

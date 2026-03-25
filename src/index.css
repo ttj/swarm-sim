@@ -49,6 +49,11 @@ html, body, #root {
   gap: 8px;
 }
 
+.ais-active {
+  background: var(--ok) !important;
+  color: #fff !important;
+}
+
 .presentation-btn {
   font-size: 16px !important;
   padding: 4px 8px !important;
