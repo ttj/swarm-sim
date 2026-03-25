@@ -148,16 +148,118 @@ The optimal blue investment is therefore: **EW first, DE second, interceptors th
 
 ---
 
+## V2 Analysis: The Saturation Ladder (March 2026)
+
+V2 expanded the analysis to 40+ defense configurations against 7 attack types including autonomous vision-nav drones, fiber-optic guided drones, and Jiutian mothership swarm deployments. The combat model was tuned to produce realistic differentiation (3% interceptor launch rate per tick matching ~30s real-world launch cycles).
+
+### New Systems Modeled
+
+| System | Type | Cost | Key Capability |
+|--------|------|------|---------------|
+| **Epirus Leonidas HPM** | High-power microwave | $16.5M | Area-denial: single pulse defeats 50+ drones. Works vs fiber-optic AND autonomous. $5/shot. |
+| **SkyFall P1-SUN** | Kamikaze interceptor | $1K/unit | Ukraine-proven, 300+ km/h, 3D-printed. Cheapest kinetic option. |
+| **Fiber-optic drone** | Attack (EW-immune) | $8K | Immune to ALL RF jamming. Only HPM and kinetic can defeat. |
+| **Jiutian sub-munition** | Attack (autonomous) | $5K | Deployed from 16-ton mothership at 15km altitude. GPS-independent. |
+
+### The Saturation Ladder
+
+The single most important finding: **the scale of attack determines which defense works, not the technology of the drones.**
+
+| Attack Scale | Best Defense | Cost | P(≥3 safe) | What Fails |
+|-------------|-------------|------|------------|------------|
+| 500 drones | Cheap interceptors | $100K | 100% | Nothing — all defenses work |
+| 500 + GPS jam | EW blanket | $12M | 100% | Interceptors slightly degraded |
+| **1,000 multi-axis** | **HPM at top 2** | **$33M** | **100%** | **EW and interceptors both fail** |
+| **2,000 + GPS jam** | **Nothing available** | $66M max | **0%** | **All current defenses overwhelmed** |
+| 500 autonomous | Cheap interceptors | $100K | 100% | EW-immunity irrelevant for kinetic |
+| 300 fiber-optic | Cheap interceptors | $100K | 100% | EW-immunity irrelevant at this scale |
+| 500 Jiutian swarm | Cheap interceptors | $100K | 100% | Mothership delivery doesn't change defense math |
+
+### Strategy 6: HPM is the Dominant Defense Above 500 Drones
+
+**At 1,000+ drone attacks, HPM is the ONLY defense that achieves facility survival.**
+
+EW jammers kill 344 drones (of 1,000) but can't process fast enough. Interceptor squads at 3%/tick are too slow. HPM area-denial pulses defeat all drones within 1km simultaneously, regardless of guidance type.
+
+| Defense vs 1,000 drones | Cost | P(≥3 safe) | Kills |
+|------------------------|------|------------|-------|
+| EW blanket | $12M | 0% | 344 |
+| 200 interceptors | $400K | 0% | 0 |
+| **HPM at top 2** | **$33M** | **100%** | **300** |
+| HPM + EW | $45M | 100% | 461 |
+
+**Implication**: The optimal defense investment order is now **HPM first, EW second, interceptors third** — a revision of the v1 finding. HPM is more expensive than EW ($16.5M vs $3M) but is the only system that scales to 1,000+ drone attacks.
+
+### Strategy 7: 2,000 Drones is the Defense Ceiling
+
+**No currently modeled defense system can stop 2,000+ coordinated drones.** Even $66M in HPM at all 4 sites + EW blanket achieves 0% facility survival against 2,000 Shaheds with GPS jamming.
+
+This means defense against mass drone attacks above ~1,500 drones requires either:
+1. **Pre-emptive strike** — destroy drones before launch (mothership kill, airfield attack)
+2. **Attrition campaign** — sustain defense over days, depleting red's stockpile faster than production
+3. **Force multiplication** — next-gen HPM with 2x range (Epirus 2026 upgrade), or multiple HPM per site
+
+### Strategy 8: Autonomous Drone EW-Immunity is Overrated
+
+**Autonomous and fiber-optic drones are NOT harder to defend against than GPS drones — at the same scale.**
+
+The v1 analysis feared that switching to autonomous drones ($75K) would neutralize EW defense. The v2 analysis shows this is wrong: kinetic interceptors work against all drone types regardless of guidance. The only advantage of autonomous drones is EW-immunity, which matters only when EW is the primary defense.
+
+The real attacker's dilemma remains cost-based:
+- GPS drones ($30K): Cheap, EW-jammable, but overwhelming at scale
+- Autonomous ($75K): EW-resistant, but 2.5x cost for the same kinetic effect
+- Fiber-optic ($8K): Cheap AND EW-resistant, but short-range (20km) — requires close launch platforms
+
+**The most dangerous attack is not the most technologically advanced — it's the cheapest one at the largest scale.**
+
+### Strategy 9: The Campaign Threshold
+
+Multi-day campaign simulations show that sustained 400 drone/day attacks for 7 days (2,800 total) can overwhelm HPM + EW defenses that handle 1,000 in a single engagement. The difference: daily attacks deplete interceptor stocks while facilities accumulate damage.
+
+| Campaign Scenario | Break Point | Key Factor |
+|-------------------|-------------|------------|
+| 400/day + EW defense | Day 3-4 | Interceptor stocks exhaust |
+| 400/day + HPM defense | Day 5-6 | HPM range limits coverage gaps |
+| 1,000/day surge | Day 1-2 | Immediate saturation |
+
+**Implication**: The production rate ratio (red drones/day vs blue interceptors/day) is the ultimate determinant of campaign outcome, not single-engagement technology.
+
+---
+
 ## Scenarios Available in Simulator
 
-These strategies are available as pre-built scenarios in the simulator (marked with [AI] prefix):
+### Pre-Built Scenarios (14 total)
 
-1. **[AI] EW-Only vs 500 Shaheds ($12M)** — Zero interceptors, pure EW
-2. **[AI] Single EW at Hsinchu vs 500 ($3M)** — Fortress approach, sacrifice 3
-3. **[AI] EW+DE Layered vs 2K Drones ($32M)** — Optimal layered defense
-4. **[AI] 200 Interceptors FAIL vs 500 ($400K)** — Demonstrates saturation failure
-5. **[AI] GPS Jamming BACKFIRES on Red ($12M)** — Double-edged sword paradox
+**Designed scenarios (6):**
+1. Probe vs Shoestring ($1M) — 200 Shaheds
+2. 500 Shaheds vs EW ($50M)
+3. 1K + GPS Jam vs Layered ($500M)
+4. 2K + Feint vs Fortress ($1.5B)
+5. 3K Attrition vs Full Spectrum ($5B)
+6. Quarantine + Missiles + 2K + UUVs ($5B)
 
-Run `npm run dev` and select these from the Scenario tab to simulate them visually.
+**AI-discovered strategies (5):**
+7. [AI] EW-Only vs 500 ($12M) — zero interceptors, pure EW
+8. [AI] Single EW at Hsinchu ($3M) — sacrifice 3, save 1
+9. [AI] EW+DE vs 2K ($32M) — layered soft-kill
+10. [AI] 200 Interceptors FAIL ($400K) — saturation defeats kinetic
+11. [AI] GPS Jamming BACKFIRES ($12M) — double-edged sword
 
-Run `npx tsx scripts/run-analysis.ts` for the full adversarial search across all attack levels.
+**Calibration & new threat scenarios (3):**
+12. [CAL] Iran-UAE 2026 (2,000 drones) — calibrate to 93-97% intercept
+13. [NEW] Jiutian Mothership (500 autonomous) — 5 motherships deploy 100 each
+14. [NEW] Fiber-Optic Attack (300 EW-immune) — tests HPM necessity
+
+**Multi-day campaigns (Campaign tab):**
+- 7-Day: 400/day vs EW defense
+- 7-Day: 400/day vs HPM defense
+- 7-Day: 1,000/day surge (overwhelming)
+
+### Running the Analysis
+
+```bash
+npm run dev              # Interactive simulator
+npx tsx scripts/run-analysis.ts  # Full adversarial search (7 attack types × 40+ defenses)
+```
+
+Live demo: https://ttj.github.io/swarm-sim/
