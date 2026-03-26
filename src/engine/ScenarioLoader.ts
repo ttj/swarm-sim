@@ -724,12 +724,94 @@ export function getScenarioPresets(facilities: Facility[]): Scenario[] {
     environment: baseEnvironment(),
   };
 
+  // ============================================================
+  // RED TACTICAL SCENARIOS
+  // ============================================================
+
+  // Decoy-heavy attack: 3:1 decoy ratio wastes 70% more blue ammo
+  const tactDecoy: Scenario = {
+    id: 'tact-decoy-heavy',
+    name: '[TACT] Decoy-Heavy Attack (750 + 250 real)',
+    description: 'Red sends 750 cheap decoys ($2K each) followed by 250 real Shaheds 10 min later. Decoys exhaust interceptor stocks, real wave gets through. Real-world tactic from Ukraine.',
+    durationHours: 4,
+    redForce: {
+      conventionalStrikes: [],
+      vessels: [],
+      quarantineFormation: 'arc',
+      airWaves: [
+        // Wave 1: Decoy swarm (cheap FPV acting as decoys — triggers blue defenses)
+        { id: 'decoy-1', launchTimeMinutes: 5, droneSpec: 'fpv-kamikaze', count: 400, origin: FUJIAN_NORTH, target: 'tsmc-hsinchu-hq', approachBearing: 88, formation: 'dispersed' },
+        { id: 'decoy-2', launchTimeMinutes: 7, droneSpec: 'fpv-kamikaze', count: 350, origin: FUJIAN_CENTRAL, target: 'tsmc-tainan-fab18', approachBearing: 105, formation: 'dispersed' },
+        // Wave 2: Real strike (delayed, after blue stocks depleted)
+        { id: 'real-1', launchTimeMinutes: 20, droneSpec: 'shahed-136', count: 150, origin: FUJIAN_NORTH, target: 'tsmc-hsinchu-hq', approachBearing: 82, formation: 'concentrated' },
+        { id: 'real-2', launchTimeMinutes: 22, droneSpec: 'shahed-136', count: 100, origin: FUJIAN_CENTRAL, target: 'tsmc-tainan-fab18', approachBearing: 110, formation: 'concentrated' },
+      ],
+      seaLaunchedWaves: [],
+      uuvDeployment: { count: 0, mineTargets: [] },
+      strategy: 'feint_and_strike',
+      totalBudgetUSD: 9_000_000,
+      gpsJammingActive: false,
+      ewCapability: 'none',
+    },
+    blueForce: {
+      assets: defenseLayered(),
+      totalBudgetUSD: 500_000_000,
+      alliedSupport: { enabled: false, carrierStrikeGroup: false, submarineSupport: false, ewSupport: false },
+      c2Resilience: 'distributed',
+      productionRate: 0,
+    },
+    facilities: facilityClones(),
+    environment: baseEnvironment(),
+    swarmAlgorithm: 'combined',
+  };
+
+  // Probe-then-commit: 10% scouts first, then redirect main force to weakest sector
+  const tactProbe: Scenario = {
+    id: 'tact-probe-commit',
+    name: '[TACT] Probe-then-Commit (1000 drones)',
+    description: 'Red sends 100 probes across all 4 targets. After probes reveal defenses (T+20min), main force of 900 concentrates on the weakest point. Tests adaptive targeting.',
+    durationHours: 4,
+    redForce: {
+      conventionalStrikes: [],
+      vessels: [],
+      quarantineFormation: 'arc',
+      airWaves: [
+        // Probe phase: 25 drones per facility
+        { id: 'probe-1', launchTimeMinutes: 3, droneSpec: 'shahed-136', count: 25, origin: FUJIAN_NORTH, target: 'tsmc-hsinchu-hq', approachBearing: 88, formation: 'line' },
+        { id: 'probe-2', launchTimeMinutes: 3, droneSpec: 'shahed-136', count: 25, origin: FUJIAN_CENTRAL, target: 'tsmc-tainan-fab18', approachBearing: 105, formation: 'line' },
+        { id: 'probe-3', launchTimeMinutes: 3, droneSpec: 'shahed-136', count: 25, origin: FUJIAN_SOUTH, target: 'tsmc-kaohsiung', approachBearing: 95, formation: 'line' },
+        { id: 'probe-4', launchTimeMinutes: 3, droneSpec: 'shahed-136', count: 25, origin: [119.4, 24.0], target: 'tsmc-taichung', approachBearing: 90, formation: 'line' },
+        // Main assault: concentrated on Tainan (assumes probe reveals it as weakest)
+        { id: 'main-1', launchTimeMinutes: 25, droneSpec: 'shahed-136', count: 500, origin: FUJIAN_CENTRAL, target: 'tsmc-tainan-fab18', approachBearing: 108, formation: 'concentrated' },
+        { id: 'main-2', launchTimeMinutes: 30, droneSpec: 'shahed-136', count: 400, origin: FUJIAN_SOUTH, target: 'tsmc-tainan-fab18', approachBearing: 100, formation: 'dispersed' },
+      ],
+      seaLaunchedWaves: [],
+      uuvDeployment: { count: 0, mineTargets: [] },
+      strategy: 'adaptive',
+      totalBudgetUSD: 30_000_000,
+      gpsJammingActive: true,
+      ewCapability: 'moderate',
+    },
+    blueForce: {
+      assets: defenseLayered(),
+      totalBudgetUSD: 500_000_000,
+      alliedSupport: { enabled: false, carrierStrikeGroup: false, submarineSupport: false, ewSupport: false },
+      c2Resilience: 'distributed',
+      productionRate: 50,
+    },
+    facilities: facilityClones(),
+    environment: baseEnvironment(),
+    swarmAlgorithm: 'combined',
+  };
+
   return [
     scenario1, scenario2, scenario3, scenario4, scenario5, scenario6,
     // AI-discovered strategies
     discovery1, discovery2, discovery3, discovery4, discovery5,
     // Calibration & new threat scenarios
     calIranUAE, calJiutian, calFiberOptic,
+    // Red tactical scenarios
+    tactDecoy, tactProbe,
   ];
 }
 
