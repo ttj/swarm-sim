@@ -6,6 +6,7 @@ import { MovementModel } from './MovementModel';
 import { CombatResolver } from './CombatResolver';
 import { CostTracker } from './CostTracker';
 import { RandomStream } from './RandomStream';
+import { DEFAULT_SWARM_CONFIG } from './SwarmBehavior';
 import { SnapshotStore, type SimSnapshot } from './SnapshotStore';
 import { SIM_TICK_SECONDS } from '../utils/constants';
 import { bearing, distanceKm } from '../utils/geo';
@@ -58,7 +59,12 @@ export class SimulationEngine {
     this.droneSpecs = droneSpecs;
     this.rng = new RandomStream(seed);
     this.costTracker = new CostTracker();
-    this.movementModel = new MovementModel(droneSpecs);
+    this.movementModel = new MovementModel(droneSpecs,
+      scenario.swarmAlgorithm ? {
+        ...DEFAULT_SWARM_CONFIG,
+        algorithm: scenario.swarmAlgorithm as any,
+      } : undefined
+    );
     this.combatResolver = new CombatResolver(droneSpecs, assetSpecs, this.costTracker, seed);
 
     this.facilities = scenario.facilities.map((f) => ({ ...f }));

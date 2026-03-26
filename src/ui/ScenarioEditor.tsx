@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSimulationStore } from '../store/SimulationStore';
 import type { Scenario, RedStrategyType } from '../types';
+import type { SwarmAlgorithm } from '../engine/SwarmBehavior';
 
 const STRATEGIES: { value: RedStrategyType; label: string }[] = [
   { value: 'saturation_rush', label: 'Saturation Rush' },
@@ -26,6 +27,8 @@ export default function ScenarioEditor() {
   const [strategy, setStrategy] = useState<RedStrategyType>('saturation_rush');
   const [durationHours, setDurationHours] = useState(4);
   const [waveCount, setWaveCount] = useState(1);
+  const [swarmAlgo, setSwarmAlgo] = useState<SwarmAlgorithm>('waypoint');
+  const [droneType, setDroneType] = useState('shahed-136');
 
   const handleApply = () => {
     if (facilities.length === 0) return;
@@ -41,7 +44,7 @@ export default function ScenarioEditor() {
     const airWaves = Array.from({ length: waveCount }, (_, i) => ({
       id: `custom-wave-${i + 1}`,
       launchTimeMinutes: 5 + i * 20,
-      droneSpec: 'shahed-136',
+      droneSpec: droneType,
       count: i === waveCount - 1 ? droneCount - dronesPerWave * i : dronesPerWave,
       origin: origins[i % origins.length],
       target: waveCount === 1 ? targetId : TARGETS[i % TARGETS.length].id,
@@ -85,6 +88,7 @@ export default function ScenarioEditor() {
         timeOfDay: 'day',
         seaState: 2,
       },
+      swarmAlgorithm: swarmAlgo,
     };
 
     const store = useSimulationStore.getState();
@@ -160,6 +164,26 @@ export default function ScenarioEditor() {
       </div>
 
       <div className="editor-field">
+        <label>Drone Type</label>
+        <select value={droneType} onChange={(e) => setDroneType(e.target.value)}>
+          <option value="shahed-136">Shahed-136 ($30K)</option>
+          <option value="autonomous-strike">Autonomous ($75K)</option>
+          <option value="fiber-optic-drone">Fiber-Optic ($8K)</option>
+          <option value="jiutian-swarm-drone">Jiutian Sub ($5K)</option>
+        </select>
+      </div>
+
+      <div className="editor-field">
+        <label>Swarm Behavior</label>
+        <select value={swarmAlgo} onChange={(e) => setSwarmAlgo(e.target.value as SwarmAlgorithm)}>
+          <option value="waypoint">Waypoint (simple)</option>
+          <option value="boids">Boids (flocking)</option>
+          <option value="potential_field">Potential Field (evade)</option>
+          <option value="combined">Combined (flock+evade)</option>
+        </select>
+      </div>
+
+      <div className="editor-field">
         <label className="checkbox-label">
           <input
             type="checkbox"
@@ -171,8 +195,8 @@ export default function ScenarioEditor() {
       </div>
 
       <div className="editor-summary">
-        Cost: ${((droneCount * 30000) / 1_000_000).toFixed(1)}M |
-        {' '}{Math.ceil(droneCount / waveCount)}/wave
+        Cost: ${((droneCount * ({ 'shahed-136': 30000, 'autonomous-strike': 75000, 'fiber-optic-drone': 8000, 'jiutian-swarm-drone': 5000 }[droneType] ?? 30000)) / 1_000_000).toFixed(1)}M |
+        {' '}{Math.ceil(droneCount / waveCount)}/wave | {swarmAlgo}
       </div>
 
       <button className="evaluate-btn" onClick={handleApply}>

@@ -218,6 +218,7 @@ export interface Scenario {
   blueForce: BlueForce;
   facilities: Facility[];
   environment: EnvironmentConfig;
+  swarmAlgorithm?: string; // 'waypoint' | 'boids' | 'potential_field' | 'combined'
 }
 
 // === Simulation State ===
