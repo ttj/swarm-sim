@@ -528,6 +528,85 @@ export default function MapContainer() {
       );
     }
 
+    // === SWARM FORMATION LABELS ===
+    // Group active red drones by target waypoint and show centroid + count
+    if (activeRedDrones.length > 10) {
+      const waveGroups = new Map<string, { lngs: number[]; lats: number[]; count: number }>();
+      for (const d of activeRedDrones) {
+        const targetKey = d.waypoints.length > 0
+          ? `${d.waypoints[d.waypoints.length - 1][0].toFixed(1)},${d.waypoints[d.waypoints.length - 1][1].toFixed(1)}`
+          : 'unknown';
+        if (!waveGroups.has(targetKey)) {
+          waveGroups.set(targetKey, { lngs: [], lats: [], count: 0 });
+        }
+        const g = waveGroups.get(targetKey)!;
+        g.lngs.push(d.position[0]);
+        g.lats.push(d.position[1]);
+        g.count++;
+      }
+
+      const formationLabels: { position: [number, number]; text: string }[] = [];
+      for (const [, group] of waveGroups) {
+        if (group.count < 5) continue;
+        const cx = group.lngs.reduce((s, v) => s + v, 0) / group.count;
+        const cy = group.lats.reduce((s, v) => s + v, 0) / group.count;
+        formationLabels.push({
+          position: [cx, cy - 0.05],
+          text: `${group.count} drones`,
+        });
+      }
+
+      if (formationLabels.length > 0) {
+        layers.push(
+          new TextLayer({
+            id: 'formation-labels',
+            data: formationLabels,
+            getPosition: (d: any) => d.position,
+            getText: (d: any) => d.text,
+            getColor: [255, 100, 100, 200],
+            getSize: 11,
+            getTextAnchor: 'middle',
+            getAlignmentBaseline: 'top',
+            fontFamily: 'Consolas, monospace',
+            fontWeight: 'bold',
+            outlineWidth: 2,
+            outlineColor: [0, 0, 0, 200],
+            billboard: true,
+            sizeUnits: 'pixels',
+          })
+        );
+      }
+    }
+
+    // === HPM PULSE RINGS ===
+    // Show expanding magenta rings when HPM fires (from engagement events)
+    const hpmEvents = events.filter((e) =>
+      e.type === 'intercept' && e.description.includes('HPM') && e.position
+    );
+    if (hpmEvents.length > 0) {
+      const recentHpm = hpmEvents.slice(-5); // Last 5 HPM pulses
+      const pulseRings = recentHpm.map((e) => ({
+        position: e.position!,
+        // Ring expands based on age (use event time vs current sim time)
+        radius: 1500, // ~1.5km (HPM range)
+      }));
+      layers.push(
+        new ScatterplotLayer({
+          id: 'hpm-pulse-rings',
+          data: pulseRings,
+          getPosition: (d: any) => d.position,
+          getRadius: (d: any) => d.radius,
+          getFillColor: [255, 0, 255, 0], // Transparent fill
+          getLineColor: [255, 0, 255, 150],
+          lineWidthMinPixels: 2,
+          stroked: true,
+          filled: false,
+          radiusMinPixels: 10,
+          radiusMaxPixels: 60,
+        })
+      );
+    }
+
     // === ENGAGEMENT FLASHES ===
     const activeFlashes = engagementFlashes.filter((f) => now - f.time < 1500);
     if (activeFlashes.length > 0) {
