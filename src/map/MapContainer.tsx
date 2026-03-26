@@ -9,6 +9,7 @@ import { ASSET_TEMPLATES } from '../ui/AssetPalette';
 import { MAP_CENTER, MAP_DEFAULT_ZOOM, MAPLIBRE_STYLES, MAPBOX_STYLES, COLORS } from '../utils/constants';
 import { circlePoints } from '../utils/geo';
 import { startAIS } from '../data/AISClient';
+import { engagementTracker, type EngagementEvent } from '../engine/EngagementTracker';
 import type { MapStyle, DroneInstance, DefenseAssetInstance, Facility } from '../types';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
@@ -607,9 +608,91 @@ export default function MapContainer() {
       );
     }
 
-    // === ENGAGEMENT FLASHES ===
+    // === TYPED ENGAGEMENT VISUALS ===
+    const activeEngagements = engagementTracker.getActive();
+    if (activeEngagements.length > 0) {
+      // Color + width by engagement type
+      const engagementColors: Record<string, [number, number, number]> = {
+        interceptor: [50, 150, 255],     // Blue streak
+        ew_jam: [170, 100, 255],         // Purple
+        hpm_pulse: [255, 0, 255],        // Magenta
+        directed_energy: [255, 255, 100], // Bright yellow beam
+        net_capture: [100, 255, 150],    // Green arc
+        patriot: [255, 255, 255],        // White streak
+        facility_hit: [255, 100, 0],     // Orange
+      };
+      const engagementWidths: Record<string, number> = {
+        interceptor: 2, ew_jam: 1, hpm_pulse: 4, directed_energy: 3,
+        net_capture: 2, patriot: 3, facility_hit: 3,
+      };
+
+      layers.push(
+        new LineLayer<EngagementEvent>({
+          id: 'typed-engagements',
+          data: activeEngagements,
+          getSourcePosition: (d) => d.source,
+          getTargetPosition: (d) => d.target,
+          getColor: (d) => {
+            const age = engagementTracker.getAge(d);
+            const alpha = Math.max(0, 255 * (1 - age));
+            const base = engagementColors[d.type] ?? [255, 255, 50];
+            return [base[0], base[1], base[2], alpha];
+          },
+          getWidth: (d: any) => engagementWidths[d.type] ?? 2,
+          widthMinPixels: 1,
+        })
+      );
+
+      // HPM pulse rings (expanding circles for HPM events)
+      const hpmPulses = activeEngagements.filter((e) => e.type === 'hpm_pulse');
+      if (hpmPulses.length > 0) {
+        layers.push(
+          new ScatterplotLayer({
+            id: 'hpm-pulse-rings-typed',
+            data: hpmPulses,
+            getPosition: (d: any) => d.source,
+            getRadius: (d: any) => {
+              const age = engagementTracker.getAge(d);
+              return 500 + age * 1500; // Expanding from 500m to 2km
+            },
+            getFillColor: [255, 0, 255, 0],
+            getLineColor: (d: any) => {
+              const age = engagementTracker.getAge(d);
+              return [255, 0, 255, Math.max(0, 200 * (1 - age))];
+            },
+            lineWidthMinPixels: 2,
+            stroked: true,
+            filled: false,
+            radiusMinPixels: 8,
+            radiusMaxPixels: 50,
+          })
+        );
+      }
+
+      // EW jamming zones (pulsing purple circles around active EW)
+      const ewJams = activeEngagements.filter((e) => e.type === 'ew_jam');
+      if (ewJams.length > 0) {
+        layers.push(
+          new ScatterplotLayer({
+            id: 'ew-jam-zones',
+            data: ewJams,
+            getPosition: (d: any) => d.source,
+            getRadius: 5000, // 5km visual
+            getFillColor: [170, 100, 255, 15],
+            getLineColor: [170, 100, 255, 60],
+            lineWidthMinPixels: 1,
+            stroked: true,
+            filled: true,
+            radiusMinPixels: 5,
+            radiusMaxPixels: 30,
+          })
+        );
+      }
+    }
+
+    // === LEGACY ENGAGEMENT FLASHES (fallback) ===
     const activeFlashes = engagementFlashes.filter((f) => now - f.time < 1500);
-    if (activeFlashes.length > 0) {
+    if (activeFlashes.length > 0 && activeEngagements.length === 0) {
       layers.push(
         new LineLayer<EngagementFlash>({
           id: 'engagement-flashes',

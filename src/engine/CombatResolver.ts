@@ -3,6 +3,7 @@ import { distanceKm } from '../utils/geo';
 import { RandomStream } from './RandomStream';
 import { CostTracker } from './CostTracker';
 import { SpatialGrid, kmToDeg } from './SpatialGrid';
+import { engagementTracker, defenseTypeToEngagement } from './EngagementTracker';
 
 export interface CombatContext {
   gpsJammingActive: boolean;
@@ -132,6 +133,13 @@ export class CombatResolver {
           }
         }
         if (hpmKills > 0) {
+          engagementTracker.add({
+            type: 'hpm_pulse',
+            source: asset.position,
+            target: [...asset.position] as [number, number],
+            time: performance.now(),
+            success: true,
+          });
           events.push({
             timeSec: context.currentTimeSec,
             type: 'intercept',
@@ -174,8 +182,18 @@ export class CombatResolver {
 
         // Roll for kill
         if (this.rng.chance(effectivePkill)) {
-          target.state = spec.type === 'net_launcher' ? 'captured' : 'destroyed';
+          const isCapture = spec.type === 'net_launcher';
+          target.state = isCapture ? 'captured' : 'destroyed';
           this.costTracker.addDroneDestroyed('red');
+
+          // Track typed engagement for visualization
+          engagementTracker.add({
+            type: defenseTypeToEngagement(spec.type, isCapture),
+            source: asset.position,
+            target: [...target.position] as [number, number],
+            time: performance.now(),
+            success: true,
+          });
 
           events.push({
             timeSec: context.currentTimeSec,
