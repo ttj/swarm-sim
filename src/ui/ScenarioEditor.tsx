@@ -170,6 +170,8 @@ export default function ScenarioEditor() {
           <option value="autonomous-strike">Autonomous ($75K)</option>
           <option value="fiber-optic-drone">Fiber-Optic ($8K)</option>
           <option value="jiutian-swarm-drone">Jiutian Sub ($5K)</option>
+          <option value="loitering-munition">Loitering Munition ($35K)</option>
+          <option value="ea-jammer-drone">EA Jammer Drone ($50K)</option>
         </select>
       </div>
 

@@ -91,6 +91,42 @@
       }
     },
     {
+      "id": "loitering-munition",
+      "name": "Loitering Munition (Lancet-class)",
+      "side": "red",
+      "domain": "air",
+      "speedKmh": 110,
+      "cruiseSpeedKmh": 80,
+      "maxRangeKm": 40,
+      "enduranceMinutes": 60,
+      "costUSD": 35000,
+      "payloadKg": 5,
+      "guidance": "autonomous_vision",
+      "vulnerabilities": {
+        "ewJammable": false,
+        "radarCrossSection": "low",
+        "irSignature": "low"
+      }
+    },
+    {
+      "id": "ea-jammer-drone",
+      "name": "EA Jamming Drone",
+      "side": "red",
+      "domain": "air",
+      "speedKmh": 150,
+      "cruiseSpeedKmh": 130,
+      "maxRangeKm": 200,
+      "enduranceMinutes": 120,
+      "costUSD": 50000,
+      "payloadKg": 10,
+      "guidance": "autonomous_vision",
+      "vulnerabilities": {
+        "ewJammable": false,
+        "radarCrossSection": "medium",
+        "irSignature": "low"
+      }
+    },
+    {
       "id": "jiutian-swarm-drone",
       "name": "Jiutian Swarm Drone (Sub-munition)",
       "side": "red",
@@ -242,6 +278,28 @@
       "capacity": 50,
       "reloadTimeMinutes": 0,
       "pkill": 0.65
+    },
+    {
+      "id": "sky-sword-2",
+      "name": "Sky Sword II (Tien Chien II)",
+      "type": "interceptor_squad",
+      "rangeKm": 15,
+      "costPerUseUSD": 500000,
+      "fixedCostUSD": 5000000,
+      "capacity": 4,
+      "reloadTimeMinutes": 5,
+      "pkill": 0.85
+    },
+    {
+      "id": "acoustic-disruptor",
+      "name": "Acoustic Resonance Disruptor",
+      "type": "directed_energy",
+      "rangeKm": 0.5,
+      "costPerUseUSD": 0.01,
+      "fixedCostUSD": 10000,
+      "capacity": 9999,
+      "reloadTimeMinutes": 0.02,
+      "pkill": 0.6
     },
     {
       "id": "patriot-pac3",
