@@ -17,11 +17,26 @@ export interface CombatContext {
  * Resolves combat engagements between defense assets and attacking drones.
  * Implements the saturation modifier, GPS jamming effects, and layered defense.
  */
+// Kill chain delay: ticks a drone must be tracked before engagement
+// Real-world: 15-60 seconds = 1.5-6 ticks at 10s/tick
+const KILL_CHAIN_TICKS: Record<string, number> = {
+  interceptor_squad: 3,   // 30s: detect, track, launch interceptor
+  ew_jammer: 1,           // 10s: near-instant once in range
+  directed_energy: 2,     // 20s: acquire, track, fire
+  hpm: 1,                 // 10s: area-denial, no tracking needed
+  net_launcher: 3,        // 30s: approach, aim, fire net
+  decoy_emitter: 0,       // Instant: passive
+  patriot_battery: 4,     // 40s: detect, classify, authorize, fire
+  anti_ship_battery: 5,   // 50s: full engagement cycle
+};
+
 export class CombatResolver {
   private droneSpecs: Map<string, DroneSpec>;
   private assetSpecs: Map<string, DefenseAssetSpec>;
   private rng: RandomStream;
   private costTracker: CostTracker;
+  // Track how many ticks each drone has been in range of each asset
+  private trackingTicks: Map<string, number> = new Map(); // key: "assetId-droneId"
 
   constructor(
     droneSpecs: DroneSpec[],
@@ -75,12 +90,37 @@ export class CombatResolver {
 
       if (inRange.length === 0) continue;
 
+      // === KILL CHAIN DELAY: track how long each drone has been in range ===
+      const requiredTicks = KILL_CHAIN_TICKS[spec.type] ?? 2;
+      const engageableDrones: DroneInstance[] = [];
+      for (const drone of inRange) {
+        const key = `${asset.instanceId}-${drone.instanceId}`;
+        const currentTicks = (this.trackingTicks.get(key) ?? 0) + 1;
+        this.trackingTicks.set(key, currentTicks);
+        if (currentTicks >= requiredTicks) {
+          engageableDrones.push(drone);
+        }
+      }
+
+      // Clean up tracking for drones no longer in range
+      const inRangeIds = new Set(inRange.map((d) => d.instanceId));
+      for (const [key] of this.trackingTicks) {
+        if (key.startsWith(`${asset.instanceId}-`)) {
+          const droneId = Number(key.split('-')[1]);
+          if (!inRangeIds.has(droneId)) {
+            this.trackingTicks.delete(key);
+          }
+        }
+      }
+
+      if (engageableDrones.length === 0) continue;
+
       // === HPM SPECIAL CASE: area-denial, single pulse defeats all in range ===
       // HPM works against ALL drone types including fiber-optic and autonomous
       if (spec.type === 'hpm') {
         // HPM fires once per cooldown (~5s), hits everything in range
         let hpmKills = 0;
-        for (const target of inRange) {
+        for (const target of engageableDrones) {
           if (target.state !== 'transit') continue;
           // HPM has very high pkill regardless of drone guidance type
           const rangeFraction = distanceKm(asset.position, target.position) / spec.rangeKm;
@@ -104,16 +144,16 @@ export class CombatResolver {
         continue; // Skip normal engagement loop for HPM
       }
 
-      // Calculate saturation modifier
+      // Calculate saturation modifier (based on all drones in range, not just engageable)
       const saturationMod = Math.min(1.0, asset.currentStock / inRange.length);
 
-      // Process engagements based on asset type
+      // Process engagements only against drones that have completed kill chain
       const engagementsThisTick = this.getEngagementsPerTick(spec, asset.currentStock);
 
-      for (let i = 0; i < Math.min(engagementsThisTick, inRange.length); i++) {
+      for (let i = 0; i < Math.min(engagementsThisTick, engageableDrones.length); i++) {
         if (asset.currentStock <= 0) break;
 
-        const target = inRange[i];
+        const target = engageableDrones[i];
         if (target.state !== 'transit') continue;
 
         const droneSpec = this.droneSpecs.get(target.specId);

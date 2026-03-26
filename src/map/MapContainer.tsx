@@ -448,8 +448,35 @@ export default function MapContainer() {
       );
     }
 
-    // === RED DRONES ===
+    // === RED DRONE HEADING TRAILS ===
     const activeRedDrones = drones.filter((d) => d.side === 'red' && d.state === 'transit');
+    if (activeRedDrones.length > 0 && activeRedDrones.length <= 2000) {
+      // Show heading lines (skip at very high counts for performance)
+      const trailData = activeRedDrones.map((d) => {
+        const headingRad = (d.heading * Math.PI) / 180;
+        const trailLen = 0.015; // ~1.5km in degrees
+        return {
+          from: d.position as [number, number],
+          to: [
+            d.position[0] + Math.sin(headingRad) * trailLen,
+            d.position[1] + Math.cos(headingRad) * trailLen,
+          ] as [number, number],
+        };
+      });
+      layers.push(
+        new LineLayer({
+          id: 'red-drone-trails',
+          data: trailData,
+          getSourcePosition: (d: any) => d.from,
+          getTargetPosition: (d: any) => d.to,
+          getColor: [220, 80, 80, 100],
+          getWidth: 1,
+          widthMinPixels: 1,
+        })
+      );
+    }
+
+    // === RED DRONES ===
     const destroyedRedDrones = drones.filter(
       (d) => d.side === 'red' && (d.state === 'destroyed' || d.state === 'captured')
     );
