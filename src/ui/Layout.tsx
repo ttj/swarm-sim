@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { Allotment } from 'allotment';
+import 'allotment/dist/style.css';
 import SimControls from './SimControls';
 import StatsPanel from './StatsPanel';
 import AssetPalette from './AssetPalette';
@@ -64,50 +66,55 @@ export default function Layout() {
       </header>
 
       <div className="main-content">
-        {!presentationMode && (
-          <aside className="sidebar">
-            <div className="sidebar-tabs">
-              {[
-                { id: 'scenario', label: 'Scenario' },
-                { id: 'assets', label: 'Defense' },
-                { id: 'events', label: 'Events' },
-                { id: 'stats', label: 'Stats' },
-                { id: 'probability', label: 'Prob' },
-                { id: 'compare', label: 'Cmp' },
-                { id: 'campaign', label: 'Camp' },
-                { id: 'wargame', label: 'War' },
-                { id: 'advisor', label: 'AI' },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
-                  onClick={() => setActiveTab(tab.id as SidebarTab)}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
+        <Allotment>
+          {!presentationMode && (
+            <Allotment.Pane minSize={200} preferredSize={280} maxSize={500}>
+              <aside className="sidebar">
+                <div className="sidebar-tabs">
+                  {[
+                    { id: 'scenario', label: 'Scenario' },
+                    { id: 'assets', label: 'Defense' },
+                    { id: 'events', label: 'Events' },
+                    { id: 'stats', label: 'Stats' },
+                    { id: 'probability', label: 'Prob' },
+                    { id: 'compare', label: 'Cmp' },
+                    { id: 'campaign', label: 'Camp' },
+                    { id: 'wargame', label: 'War' },
+                    { id: 'advisor', label: 'AI' },
+                  ].map((tab) => (
+                    <button
+                      key={tab.id}
+                      className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
+                      onClick={() => setActiveTab(tab.id as SidebarTab)}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
 
-            <div className="sidebar-content">
-              {activeTab === 'scenario' && <ScenarioPanel />}
-              {activeTab === 'assets' && <AssetPalette />}
-              {activeTab === 'events' && <EventLog />}
-              {activeTab === 'stats' && <StatsPanel />}
-              {activeTab === 'probability' && <ProbabilityPanel />}
-              {activeTab === 'compare' && <ComparePanel />}
-              {activeTab === 'campaign' && <CampaignPanel />}
-              {activeTab === 'wargame' && <WargamePanel />}
-              {activeTab === 'advisor' && <StrategyAdvisor />}
-            </div>
-          </aside>
-        )}
+                <div className="sidebar-content">
+                  {activeTab === 'scenario' && <ScenarioPanel />}
+                  {activeTab === 'assets' && <AssetPalette />}
+                  {activeTab === 'events' && <EventLog />}
+                  {activeTab === 'stats' && <StatsPanel />}
+                  {activeTab === 'probability' && <ProbabilityPanel />}
+                  {activeTab === 'compare' && <ComparePanel />}
+                  {activeTab === 'campaign' && <CampaignPanel />}
+                  {activeTab === 'wargame' && <WargamePanel />}
+                  {activeTab === 'advisor' && <StrategyAdvisor />}
+                </div>
+              </aside>
+            </Allotment.Pane>
+          )}
 
-        <div className="map-area">
-          <MapContainer />
-        </div>
+          <Allotment.Pane>
+            <div className="map-area">
+              <MapContainer />
+            </div>
+          </Allotment.Pane>
+        </Allotment>
       </div>
 
-      {/* Timeline bar (always visible) */}
       <footer className="bottom-bar">
         <TimelineBar />
       </footer>

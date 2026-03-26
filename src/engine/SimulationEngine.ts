@@ -137,7 +137,7 @@ export class SimulationEngine {
     this.checkWaveLaunches(tickEvents);
 
     // 5. Move all drones
-    const reachedTarget = this.movementModel.updateAll(this.drones);
+    const reachedTarget = this.movementModel.updateAll(this.drones, this.defenseAssets);
 
     // 6. Resolve combat
     const combatEvents = this.combatResolver.resolve(

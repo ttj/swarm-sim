@@ -178,6 +178,7 @@ export default function MapContainer() {
       zoom: MAP_DEFAULT_ZOOM,
       minZoom: 5,
       maxZoom: 15,
+      preserveDrawingBuffer: true, // Required for screenshot capture
     };
 
     if (useMapbox && MAPBOX_TOKEN) {
