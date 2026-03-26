@@ -16,7 +16,7 @@ export const GRID_ROWS = 40;
 export const GRID_CELL_KM = 10;
 
 // Speed multiplier presets
-export const SPEED_PRESETS = [1, 10, 100, 1000];
+export const SPEED_PRESETS = [0.1, 1, 10, 100, 1000];
 
 // MapLibre style URLs (free, no token needed)
 // Satellite uses ESRI World Imagery (free for non-commercial/dev use)
